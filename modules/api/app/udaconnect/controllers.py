@@ -61,7 +61,7 @@ class PersonResource(Resource):
         return person
 
 
-@api.route("/persons/<person_id>/connection")
+@api.route("/persons/<person_id>/connections")
 @api.param("start_date", "Lower bound of date range", _in="query")
 @api.param("end_date", "Upper bound of date range", _in="query")
 @api.param("distance", "Proximity to a given user in meters", _in="query")
