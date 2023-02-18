@@ -178,6 +178,60 @@ To manually connect to the database, you will need software compatible with Post
 
 ## Architecture Diagrams
 
+### Dependency Graph
+
+#### a. Simplified Graph
+
+```mermaid
+graph RL
+  PersonsAPI(Persons API) --> FE(Front-End App);
+  ConnsAPI(Connections API) --> FE(Front-End App);
+  PersonSvc(Person Service) --> PersonsAPI(Persons API);
+  ConnSvc(Connection Service) --> ConnsAPI(Connections API);
+  PersonSvc(Person Service) --> ConnSvc(Connection Service);
+  LocationSvc(Location Service) --> LocationsAPI(Locations API);
+```
+
+#### b. Full Graph
+
+```mermaid
+graph RL
+  %% 1. Front-End Dependencies
+  PersonsAPI(Persons API) --> FE(Front-End App);
+  ConnsAPI(Connections API) --> FE(Front-End App);
+  %% 1.1. Persons API Dependencies
+  PersonSvc(Person Service) --> PersonsAPI(Persons API);
+  PersonSchema(Person Schema) --> PersonsAPI(Persons API);
+  %% 1.1.1. Person Service Dependencies
+  PersonModel(Person Model) --> PersonSvc(Person Service);
+  %% 1.1.2. Person Schema Dependencies
+  PersonModel(Person Model) --> PersonSchema(Person Schema);
+  %% 1.2. Connection API Dependencies
+  ConnSchema(Connection Schema) --> ConnsAPI(Connections API);
+  ConnSvc(Connection Service) --> ConnsAPI(Connections API);
+  %% 1.2.1. Connection Schema Dependencies
+  PersonSchema(Person Schema) --> ConnSchema(Connection Schema);
+  LocationSchema(Location Schema) --> ConnSchema(Connection Schema);
+  %% 1.2.1.2. Location Schema Dependencies
+  LocationModel(Location Model) --> LocationSchema(Location Schema);
+  %% 1.2.2. Connection Service Dependencies
+  LocationModel(Location Model) --> ConnSvc(Connection Service);
+  PersonModel(Person Model) --> ConnSvc(Connection Service);
+  ConnModel(Connection Model) --> ConnSvc(Connection Service);
+  PersonSvc(Person Service) --> ConnSvc(Connection Service);
+  %% 1.2.2.1. Location Model Dependencies
+  PersonModel(Person Model) --> LocationModel(Location Model);
+  %% 1.2.2.3. Connection Model Dependencies
+  PersonModel(Person Model) --> ConnModel(Connection Model);
+  LocationModel(Location Model) --> ConnModel(Connection Model);
+  %% 2. Locations API Dependencies
+  LocationSvc(Location Service) --> LocationsAPI(Locations API);
+  LocationSchema(Location Schema) --> LocationsAPI(Locations API);
+  %% 2.1. Location Service Dependencies
+  LocationModel(Location Model) -->LocationSvc(Location Service);
+  LocationSchema(Location Schema) -->LocationSvc(Location Service);
+```
+
 Your architecture diagram should focus on the services and how they talk to one another. For our project, we want the diagram in a `.png` format. Some popular free software and tools to create architecture diagrams:
 
 1. [Lucidchart](https://www.lucidchart.com/pages/)
