@@ -5,7 +5,7 @@
             - GET /persons
             - GET /persons/<person_id: int>
             - POST /persons
-            - DELETE /persons/<person_id: int>
+            - DELETE /persons/<person_id: int> (new API endpoint)
     
     2- udaconnect-connections-service:
         - RESTful microservice to handle /connections resource including:
@@ -32,12 +32,56 @@
         - in the future, when the 'person' table gets crowded, gRPC will reduce the payload size since it's being serialized in binary data format.
         - since gRPC is not as widely adopted as REST APIs, it makes sense to leverage gRPC for internal microservices communication.
 
+        - Protobuf Message:
+
+            message PersonMessage {
+                int32 id = 1;
+                string first_name = 2;
+                string last_name = 3;
+                string company_name = 4;
+            }
+
+            message EmptyMessage {}
+
+            message PersonMessageList {
+                repeated PersonMessage persons = 1;
+            }
+
+            service PersonService {
+                rpc GetPersons(EmptyMessage) returns (PersonMessageList);
+            }
+
+
     - udaconnect-locations-service will leverage Kafka as a message queue passing strategy for POST /locations endpoint:
         - Location model is more complicated than Person and Connection models. creating new Location resource might take longer than expected.
         - with an asynchronous request, we can make better use of our time by doing something else instead of waiting for the server to respond.
         - this will make UdaConnect remain available to accept messages, more fault tolerant and reduce losing messages during downtime.
         - since POST /locations isn't expected to be much used, it makes more sense to process creating new Location resources in batches instead of on-demand.
+        - Kafka needs to have 'locations' topic.
         
     - Since Kafka doesn't enforce the structure of the input data, Kafka will be exposed using REST Location service REST API:
         - to avoid additional resources which will increase the complexity, the Kafka producer and the consumer will be within udaconnect-locations-service.
         - to implement this, multi threading will be used to initialze the consumer in a separate threading module.
+        - for future development purposes, Kafka producer will produce the following format:
+            {
+                "action": <action_enum: str>,
+                "message": <message: obj>
+            }
+
+            this is needed for Kafka consumer to be able to handle different scenarios depending on 'action' value:
+
+            1- action="create":
+            {
+                "action": "create",
+                "message": {
+                    "person_id": <person_id: int>,
+                    "creation_time": <datatime_format: str>,
+                    "latitude": <latitude: str>,
+                    "longitude": <longitude: str>
+                }
+            }
+
+            -> Kafka consumer will call create() method in Location service.
+
+            Response:
+                202 - No Content
