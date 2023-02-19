@@ -261,4 +261,4 @@ graph RL
 - The starter project uses Python Flask. Flask doesn't work well with `asyncio` out-of-the-box. Consider using `multiprocessing` to create threads for asynchronous behavior in a standard Flask application.
 
 [architecture-design]: ./docs/architecture_design.png
-[architecture-decisions]: ./docs/architecture_decisions.txt
+[architecture-decisions]: ./docs/architecture-decisions.md
