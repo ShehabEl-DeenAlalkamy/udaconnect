@@ -1,3 +1,8 @@
+<!-- markdownlint-configure-file {
+  "MD033": false,
+  "MD041": false
+} -->
+
 # UdaConnect
 
 ## Overview
@@ -182,6 +187,8 @@ To manually connect to the database, you will need software compatible with Post
 
 #### a. Simplified Graph
 
+<div align="center">
+
 ```mermaid
 graph RL
   PersonsAPI(Persons API) --> FE(Front-End App);
@@ -192,7 +199,11 @@ graph RL
   LocationSvc(Location Service) --> LocationsAPI(Locations API);
 ```
 
+</div>
+
 #### b. Full Graph
+
+<div align="center">
 
 ```mermaid
 graph RL
@@ -232,9 +243,17 @@ graph RL
   LocationSchema(Location Schema) -->LocationSvc(Location Service);
 ```
 
+</div>
+
 ### II. Sequence Diagram
 
+<div align="center">
+
 ![Sequence Diagram][architecture-design]
+
+> :memo: Note: Architecture decisions can be found [here][architecture-decisions]
+
+</div>
 
 ## Tips
 
@@ -242,3 +261,4 @@ graph RL
 - The starter project uses Python Flask. Flask doesn't work well with `asyncio` out-of-the-box. Consider using `multiprocessing` to create threads for asynchronous behavior in a standard Flask application.
 
 [architecture-design]: ./docs/architecture_design.png
+[architecture-decisions]: ./docs/architecture_decisions.txt
