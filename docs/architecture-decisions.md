@@ -90,7 +90,7 @@
       }
       ```
 
-      > :memo: Note: this is needed for Kafka consumer to be able to handle different scenarios depending on 'action' value:
+      > :memo: **Note:** this is needed for Kafka consumer to be able to handle different scenarios depending on 'action' value:
 
       <br />
 

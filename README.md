@@ -251,7 +251,7 @@ graph RL
 
 ![Sequence Diagram][architecture-design]
 
-> :memo: Note: Architecture decisions can be found [here][architecture-decisions]
+> :memo: **Note:** Architecture decisions can be found [here][architecture-decisions]
 
 </div>
 
