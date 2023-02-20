@@ -1,7 +1,8 @@
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import LocationSchema
 from app.udaconnect.services import LocationService
-from flask import request
+from app.udaconnect.utils import send_data
+from flask import request, Response
 from flask_accepts import accepts, responds
 from flask_restx import Namespace, Resource
 
@@ -20,9 +21,8 @@ class LocationResource(Resource):
     @accepts(schema=LocationSchema)
     @responds(schema=LocationSchema)
     def post(self) -> Location:
-        request.get_json()
-        location: Location = LocationService.create(request.get_json())
-        return location
+        send_data(request.get_json(), "create")
+        return Response(status=202)
 
     @responds(schema=LocationSchema)
     def get(self, location_id) -> Location:
