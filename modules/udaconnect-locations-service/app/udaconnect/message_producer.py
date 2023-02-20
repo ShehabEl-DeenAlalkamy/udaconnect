@@ -12,8 +12,9 @@ class MessageProducer:
         self.broker = broker
         self.topic = topic
         self.logger = logger or current_app.logger
-        self.logger.info(f"opening Kafka connection at {self.broker}")
+        self.logger.info(f"opening {self} connection at {self.broker}")
         self.producer = KafkaProducer(bootstrap_servers=self.broker,
+                                      client_id=f"{self.topic}-producer",
                                       value_serializer=lambda v: json.dumps(
                                           v).encode('utf-8'),
                                       acks='all',
@@ -29,6 +30,9 @@ class MessageProducer:
             res = e
         return res
 
+    def __str__(self) -> str:
+        return f"{self.topic}-producer"
+
     def __del__(self):
-        self.logger.info("closing Kafka connection..")
+        self.logger.info(f"closing {self} connection..")
         self.producer.close()
