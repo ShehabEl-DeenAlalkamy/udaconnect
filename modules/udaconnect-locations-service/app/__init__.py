@@ -1,3 +1,4 @@
+from app.udaconnect.message_producer import MessageProducer
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from flask_restx import Api
@@ -23,18 +24,15 @@ def create_app(env=None):
     @app.before_request
     def before_request():
         if 'kafka_producer' not in g:
-            app.logger.info(
-                f"opening Kafka connection at {app.config['KAFKA_BROKER']}")
-            g.kafka_producer = KafkaProducer(
-                bootstrap_servers=app.config['KAFKA_BROKER'])
+            g.kafka_producer = MessageProducer(
+                app.config['KAFKA_BROKER'], app.config['KAFKA_TOPIC'])
 
     @app.teardown_appcontext
     def teardown_kafka_producer(exception):
         kafka_producer = g.pop('kafka_producer', None)
 
         if kafka_producer is not None:
-            app.logger.info("closing Kafka connection")
-            kafka_producer.close()
+            del kafka_producer
 
     @app.route("/health")
     def health():
