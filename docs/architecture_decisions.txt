@@ -65,7 +65,7 @@
         - for future development purposes, Kafka producer will produce the following format:
             {
                 "action": <action_enum: str>,
-                "message": <message: obj>
+                "data": <data: obj>
             }
 
             this is needed for Kafka consumer to be able to handle different scenarios depending on 'action' value:
@@ -73,7 +73,7 @@
             1- action="create":
             {
                 "action": "create",
-                "message": {
+                "data": {
                     "person_id": <person_id: int>,
                     "creation_time": <datatime_format: str>,
                     "latitude": <latitude: str>,

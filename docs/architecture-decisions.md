@@ -86,7 +86,7 @@
       ```json
       {
         "action": "<action_enum: str>",
-        "message": "<message: obj>"
+        "data": "<data: obj>"
       }
       ```
 
@@ -99,7 +99,7 @@
       ```json
       {
         "action": "create",
-        "message": {
+        "data": {
           "person_id": "<person_id: int>",
           "creation_time": "<datatime_format: str>",
           "latitude": "<latitude: str>",
