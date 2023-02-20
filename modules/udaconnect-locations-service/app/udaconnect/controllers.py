@@ -1,7 +1,6 @@
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import LocationSchema
 from app.udaconnect.services import LocationService
-from app.udaconnect.utils import send_data
 from flask import request, Response, g, current_app
 from flask_accepts import accepts, responds
 from flask_restx import Namespace, Resource
