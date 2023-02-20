@@ -14,8 +14,8 @@ class BaseConfig:
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    KAFKA_SERVER = os.getenv("KAFKA_SERVER")
-    KAFKA_TOPIC = os.getenv("KAFKA_LOCATION_SVC_TOPIC")
+    KAFKA_BROKER = os.environ["KAFKA_BROKER"]
+    KAFKA_TOPIC = os.environ["KAFKA_LOCATION_SVC_TOPIC"]
 
 
 class DevelopmentConfig(BaseConfig):

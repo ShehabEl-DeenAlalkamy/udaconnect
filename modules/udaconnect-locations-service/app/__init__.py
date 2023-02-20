@@ -24,9 +24,9 @@ def create_app(env=None):
     def before_request():
         if 'kafka_producer' not in g:
             app.logger.info(
-                f"opening Kafka connection at {app.config['KAFKA_SERVER']}")
+                f"opening Kafka connection at {app.config['KAFKA_BROKER']}")
             g.kafka_producer = KafkaProducer(
-                bootstrap_servers=app.config['KAFKA_SERVER'])
+                bootstrap_servers=app.config['KAFKA_BROKER'])
 
     @app.teardown_appcontext
     def teardown_kafka_producer(exception):
