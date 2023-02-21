@@ -8,6 +8,7 @@ on:
       - "v*.*.*"
     paths:
       - modules/udaconnect-locations-service/**
+      - .github/workflows/*locations*.yml
   pull_request:
     branches:
       - main
