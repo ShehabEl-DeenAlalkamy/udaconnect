@@ -1,3 +1,4 @@
+from app import _logger
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import LocationSchema
 from app.udaconnect.services import LocationService
@@ -29,7 +30,7 @@ class LocationResource(Resource):
         })
 
         if err:
-            current_app.logger.error(f"Error: {str(err)}")
+            _logger.error(f"Error: {str(err)}")
             status_code = 500
             res = "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
 

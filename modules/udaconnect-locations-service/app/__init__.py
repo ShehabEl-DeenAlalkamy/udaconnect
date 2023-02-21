@@ -1,8 +1,13 @@
+from app.config import _init_logger
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from kafka import KafkaProducer
+import logging
+
+_init_logger()
+_logger = logging.getLogger('udaconnect.locations_svc')
 
 db = SQLAlchemy()
 

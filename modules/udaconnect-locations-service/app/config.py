@@ -1,9 +1,8 @@
 from typing import List, Type
 import os
-import filters
 import logging
 import sys
-import filters
+import app.filters
 
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
@@ -70,8 +69,9 @@ def _init_logger():
     stderr_handler = logging.StreamHandler(sys.stderr)
     handlers = [stderr_handler, stdout_handler]
 
-    info_lvl_filter = filters.SingleLevelFilter(logging.INFO, False)
-    info_lvl_filter_inverter = filters.SingleLevelFilter(logging.INFO, True)
+    info_lvl_filter = app.filters.SingleLevelFilter(logging.INFO, False)
+    info_lvl_filter_inverter = app.filters.SingleLevelFilter(
+        logging.INFO, True)
 
     stdout_handler.addFilter(info_lvl_filter)
     stderr_handler.addFilter(info_lvl_filter_inverter)

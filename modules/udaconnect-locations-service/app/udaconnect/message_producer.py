@@ -1,6 +1,10 @@
+from app.config import _init_logger
 from kafka import KafkaProducer
 import json
-from flask import current_app
+import logging
+
+_init_logger()
+logger = logging.getLogger('udaconnect.locations_svc.kafka.producer')
 
 
 class MessageProducer:
@@ -8,11 +12,10 @@ class MessageProducer:
     topic = ""
     producer = None
 
-    def __init__(self, broker, topic, logger=None):
+    def __init__(self, broker, topic):
         self.broker = broker
         self.topic = topic
-        self.logger = logger or current_app.logger
-        self.logger.info(f"opening {self} connection at {self.broker}")
+        logger.info(f"opening {self} connection at {self.broker}")
         self.producer = KafkaProducer(bootstrap_servers=self.broker,
                                       client_id=f"{self.topic}-producer",
                                       value_serializer=lambda v: json.dumps(
@@ -25,7 +28,7 @@ class MessageProducer:
         try:
             self.producer.send(self.topic, msg)
             self.producer.flush()
-            self.logger.info(f"message: {msg} sent successfully..")
+            logger.info(f"message: {msg} sent successfully..")
         except Exception as e:
             res = e
         return res
@@ -34,5 +37,5 @@ class MessageProducer:
         return f"{self.topic}-producer"
 
     def __del__(self):
-        self.logger.info(f"closing {self} connection..")
+        logger.info(f"closing {self} connection..")
         self.producer.close()

@@ -2,12 +2,13 @@ import logging
 from typing import Dict
 
 from app import db
+from app import _logger
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import LocationSchema
 from geoalchemy2.functions import ST_Point
 
-logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger("udaconnect-api")
+# logging.basicConfig(level=logging.WARNING)
+# logger = logging.getLogger("udaconnect-api")
 
 
 class LocationService:
@@ -27,7 +28,7 @@ class LocationService:
     def create(location: Dict) -> Location:
         validation_results: Dict = LocationSchema().validate(location)
         if validation_results:
-            logger.warning(
+            _logger.warning(
                 f"Unexpected data format in payload: {validation_results}")
             raise Exception(f"Invalid payload: {validation_results}")
 

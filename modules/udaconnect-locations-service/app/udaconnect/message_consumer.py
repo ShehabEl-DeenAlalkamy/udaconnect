@@ -4,10 +4,6 @@ import logging
 import json
 import os
 
-logging.basicConfig(level=logging.INFO,
-                    format='[%(asctime)s] %(levelname)s:%(name)s:%(message)s')
-logger = logging.getLogger('udaconnect.locations_svc.kafka.consumer')
-
 
 class MessageConsumer(threading.Thread):
     broker = ""
@@ -26,6 +22,11 @@ class MessageConsumer(threading.Thread):
             from app.udaconnect.services import LocationService
             from app.udaconnect.schemas import LocationSchema
             from app.udaconnect.models import Location
+            from app.config import _init_logger
+
+            _init_logger()
+            logger = logging.getLogger(
+                'udaconnect.locations_svc.kafka.consumer')
 
             logger.info(
                 f"#%{os.getpid()} T{threading.get_ident()} - starting consumer topic={self.topic} broker={self.broker}")
