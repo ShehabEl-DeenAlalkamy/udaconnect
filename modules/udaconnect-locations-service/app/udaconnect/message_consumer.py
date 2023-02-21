@@ -1,3 +1,5 @@
+from app.udaconnect.services import LocationService
+from app.udaconnect.models import Location
 from multiprocessing import Process
 from kafka import KafkaConsumer
 from queue import Queue
@@ -82,10 +84,22 @@ class MessageConsumer():
     def process_msg(self, queue, consumer):
         # Set timeout to care for POSIX<3.0 and Windows.
         msg = queue.get(timeout=60)
+
         logger.info(f"#{os.getpid()} T{threading.get_ident()} - received message: topic={msg.topic} value={msg.value} partition={msg.partition} offset={msg.offset} timestamp={msg.timestamp}")
         logger.info(f"#{os.getpid()} T{threading.get_ident()} - processing..")
+
+        message_action = msg.value['action']
+        message_content = msg.value['data']
+
         try:
-            time.sleep(5)
+            if message_action == "create":
+                location = None
+                logger.info(
+                    f"#{os.getpid()} T{threading.get_ident()} - action={message_action}, creating new 'Location' resource..")
+                location: Location = LocationService.create(message_content)
+                logger.info(
+                    f"#{os.getpid()} T{threading.get_ident()} - location={location}")
+
         except Exception as e:
             logger.exception(
                 f"#{os.getpid()} T{threading.get_ident()} - error: {str(e)}")
