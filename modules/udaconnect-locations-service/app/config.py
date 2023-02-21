@@ -80,3 +80,20 @@ def _init_logger():
                         format="[%(levelname)s]:%(name)s:%(asctime)s, %(message)s",
                         datefmt='%d/%m/%y, %H:%M:%S',
                         handlers=handlers)
+
+    # disable common loggers for clean logging
+    logging.getLogger('kafka.conn').disabled = True
+    logging.getLogger('kafka.consumer.subscription_state').disabled = True
+    logging.getLogger('kafka.producer.record_accumulator').disabled = True
+    logging.getLogger('kafka.consumer.fetcher').disabled = True
+    logging.getLogger('kafka.producer.sender').disabled = True
+    logging.getLogger('kafka.producer.kafka').disabled = True
+    logging.getLogger('kafka.metrics').disabled = True
+    logging.getLogger('kafka.metrics.metrics').disabled = True
+    logging.getLogger('kafka.protocol.parser').disabled = True
+    logging.getLogger('kafka.client').disabled = True
+    logging.getLogger('kafka.coordinator').disabled = True
+    logging.getLogger('kafka.coordinator.consumer').disabled = True
+    logging.getLogger('kafka.cluster').disabled = True
+    logging.getLogger('shapely.geos').disabled = True
+    logging.getLogger('shapely.speedups._speedups').disabled = True
