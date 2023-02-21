@@ -1,4 +1,3 @@
-from app.udaconnect.message_producer import MessageProducer
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from flask_restx import Api
@@ -11,6 +10,8 @@ db = SQLAlchemy()
 def create_app(env=None):
     from app.config import config_by_name
     from app.routes import register_routes
+    from app.udaconnect.message_producer import MessageProducer
+    from app.udaconnect.message_consumer import MessageConsumer
 
     app = Flask(__name__)
     app.config.from_object(config_by_name[env or "test"])
@@ -20,6 +21,10 @@ def create_app(env=None):
 
     register_routes(api, app)
     db.init_app(app)
+
+    kafka_consumer = MessageConsumer(
+        app.config['KAFKA_BROKER'], app.config['KAFKA_TOPIC'])
+    kafka_consumer.start()
 
     @app.before_request
     def before_request():
