@@ -1,119 +1,83 @@
-# from app.udaconnect.services import LocationService
-# from app.udaconnect.models import Location
-from multiprocessing import Process
 from kafka import KafkaConsumer
-from queue import Queue
 import threading
-import os
 import logging
 import json
+import os
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] %(levelname)s:%(name)s:%(message)s')
 logger = logging.getLogger('udaconnect.locations_svc.kafka.consumer')
 
 
-class MessageConsumer():
+class MessageConsumer(threading.Thread):
     broker = ""
     topic = ""
     producer = None
 
-    def __init__(self, broker, topic, workers_num=2, threads_num=1, group_id="outlaw_group"):
+    def __init__(self, broker, topic, app, group_id="outlaw_group"):
         self.broker = broker
         self.topic = topic
-        self.workers_num = workers_num
-        self.threads_num = threads_num
+        self.app = app
         self.group_id = group_id
-        self.run_process = Process(target=self.run, daemon=False)
-
-    def start(self):
-        if not self.run_process.is_alive():
-            self.run_process.start()
+        threading.Thread.__init__(self)
 
     def run(self):
-        workers = []
-        while True:
-            live_num = len([worker for worker in workers if worker.is_alive()])
+        with self.app.app_context():
+            from app.udaconnect.services import LocationService
+            from app.udaconnect.schemas import LocationSchema
+            from app.udaconnect.models import Location
 
-            if self.workers_num == live_num:
-                continue
+            logger.info(
+                f"#%{os.getpid()} T{threading.get_ident()} - starting consumer topic={self.topic} broker={self.broker}")
 
-            for _ in range(self.workers_num - live_num):
-                p = Process(target=self.consume, daemon=True)
-                p.start()
-                workers.append(p)
-                logger.info(f"starting worker #{p.pid}")
+            consumer = KafkaConsumer(self.topic,
+                                     bootstrap_servers=self.broker,
+                                     group_id=self.group_id,
+                                     consumer_timeout_ms=1000,
+                                     value_deserializer=lambda v: json.loads(v.decode('utf-8')))
 
-    def consume(self):
-        logger.info(
-            f"#%{os.getpid()} - starting consumer topic={self.topic} broker={self.broker}")
+            while True:
+                try:
+                    for message in consumer:
+                        if message is None:
+                            continue
 
-        consumer = KafkaConsumer(self.topic,
-                                 bootstrap_servers=self.broker,
-                                 group_id=self.group_id,
-                                 consumer_timeout_ms=1000,
-                                 value_deserializer=lambda v: json.loads(v.decode('utf-8')))
-
-        queue = Queue(maxsize=self.threads_num)
-
-        logger.info(f"#%{os.getpid()} - waiting for messages..")
-        while True:
-            try:
-                for message in consumer:
-                    if message is None:
-                        continue
-
-                    if queue.full():
                         logger.info(
-                            "maximum threads reached, waiting for idle workers..")
-                        continue
+                            f"#{os.getpid()} T{threading.get_ident()} - received message: topic={message.topic} value={message.value} partition={message.partition} offset={message.offset} timestamp={message.timestamp}")
+                        logger.info(
+                            f"#{os.getpid()} T{threading.get_ident()} - processing..")
 
-                    queue.put(message)
+                        message_action = message.value['action']
+                        message_content = message.value['data']
 
-                    # Use default daemon=False to stop threads gracefully in order to
-                    # release resources properly.
-                    t = threading.Thread(
-                        target=self.process_msg, args=(queue, consumer))
-                    t.start()
-            except Exception as e:
-                logger.exception(
-                    f"#%{os.getpid()} - worker terminated reason={str(e)}")
-                consumer.close()
+                        try:
+                            if message_action == "create":
+                                location = dict()
+                                logger.info(
+                                    f"#{os.getpid()} T{threading.get_ident()} - action='{message_action}', creating new 'Location' resource..")
 
-    def process_msg(self, queue, consumer):
-        # Set timeout to care for POSIX<3.0 and Windows.
-        msg = queue.get(timeout=60)
+                                location: Location = LocationService.create(
+                                    message_content)
+                                if not location:
+                                    logger.error(
+                                        f"#{os.getpid()} T{threading.get_ident()} - unable to create 'Location' resource")
 
-        logger.info(f"#{os.getpid()} T{threading.get_ident()} - received message: topic={msg.topic} value={msg.value} partition={msg.partition} offset={msg.offset} timestamp={msg.timestamp}")
-        logger.info(f"#{os.getpid()} T{threading.get_ident()} - processing..")
+                                else:
+                                    logger.info(
+                                        f"#{os.getpid()} T{threading.get_ident()} - created location={LocationSchema().dump(location)}")
+                                    logger.info(
+                                        f"#{os.getpid()} T{threading.get_ident()} - successfully finished processing")
+                            else:
+                                logger.exception(
+                                    f"#{os.getpid()} T{threading.get_ident()} - expected action='create' got '{message_action}' instead")
+                                logger.info(
+                                    f"#{os.getpid()} T{threading.get_ident()} - nothing to do..")
 
-        # message_action = msg.value['action']
-        # message_content = msg.value['data']
+                        except Exception as e:
+                            logger.exception(
+                                f"#{os.getpid()} T{threading.get_ident()} - error: {str(e)}")
 
-        # try:
-        #     if message_action == "create":
-        #         location = None
-        #         logger.info(
-        #             f"#{os.getpid()} T{threading.get_ident()} - action={message_action}, creating new 'Location' resource..")
-        #         # location: Location = LocationService.create(message_content)
-        #         if not location:
-        #             logger.exception(
-        #                 f"#{os.getpid()} T{threading.get_ident()} - unable to create 'Location' resource")
-        #         logger.info(
-        #             f"#{os.getpid()} T{threading.get_ident()} - created location={location}")
-        #         logger.info(
-        #             f"#{os.getpid()} T{threading.get_ident()} - successfully finished processing")
-        #     else:
-        #         logger.exception(
-        #             f"#{os.getpid()} T{threading.get_ident()} - expected action='create' got '{message_action}' instead")
-        #         logger.info(
-        #             f"#{os.getpid()} T{threading.get_ident()} - nothing to do..")
-
-        # except Exception as e:
-        #     logger.exception(
-        #         f"#{os.getpid()} T{threading.get_ident()} - error: {str(e)}")
-
-        # finally:
-        #     logger.info(
-        #         f"#{os.getpid()} T{threading.get_ident()} - releasing thread..")
-        #     queue.task_done()
+                except Exception as e:
+                    logger.exception(
+                        f"#%{os.getpid()} T{threading.get_ident()} - worker terminated reason={str(e)}")
+                    consumer.close()

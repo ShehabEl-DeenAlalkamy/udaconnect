@@ -23,7 +23,7 @@ def create_app(env=None):
     db.init_app(app)
 
     kafka_consumer = MessageConsumer(
-        app.config['KAFKA_BROKER'], app.config['KAFKA_TOPIC'])
+        app.config['KAFKA_BROKER'], app.config['KAFKA_TOPIC'], app)
     kafka_consumer.start()
 
     @app.before_request
