@@ -1,13 +1,12 @@
-from app.udaconnect.services import LocationService
-from app.udaconnect.models import Location
+# from app.udaconnect.services import LocationService
+# from app.udaconnect.models import Location
 from multiprocessing import Process
 from kafka import KafkaConsumer
 from queue import Queue
 import threading
 import os
 import logging
-import time
-
+import json
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(asctime)s] %(levelname)s:%(name)s:%(message)s')
@@ -53,7 +52,7 @@ class MessageConsumer():
                                  bootstrap_servers=self.broker,
                                  group_id=self.group_id,
                                  consumer_timeout_ms=1000,
-                                 value_deserializer=lambda v: v.decode('utf-8'))
+                                 value_deserializer=lambda v: json.loads(v.decode('utf-8')))
 
         queue = Queue(maxsize=self.threads_num)
 
@@ -88,18 +87,33 @@ class MessageConsumer():
         logger.info(f"#{os.getpid()} T{threading.get_ident()} - received message: topic={msg.topic} value={msg.value} partition={msg.partition} offset={msg.offset} timestamp={msg.timestamp}")
         logger.info(f"#{os.getpid()} T{threading.get_ident()} - processing..")
 
-        message_action = msg.value['action']
-        message_content = msg.value['data']
+        # message_action = msg.value['action']
+        # message_content = msg.value['data']
 
-        try:
-            if message_action == "create":
-                location = None
-                logger.info(
-                    f"#{os.getpid()} T{threading.get_ident()} - action={message_action}, creating new 'Location' resource..")
-                location: Location = LocationService.create(message_content)
-                logger.info(
-                    f"#{os.getpid()} T{threading.get_ident()} - location={location}")
+        # try:
+        #     if message_action == "create":
+        #         location = None
+        #         logger.info(
+        #             f"#{os.getpid()} T{threading.get_ident()} - action={message_action}, creating new 'Location' resource..")
+        #         # location: Location = LocationService.create(message_content)
+        #         if not location:
+        #             logger.exception(
+        #                 f"#{os.getpid()} T{threading.get_ident()} - unable to create 'Location' resource")
+        #         logger.info(
+        #             f"#{os.getpid()} T{threading.get_ident()} - created location={location}")
+        #         logger.info(
+        #             f"#{os.getpid()} T{threading.get_ident()} - successfully finished processing")
+        #     else:
+        #         logger.exception(
+        #             f"#{os.getpid()} T{threading.get_ident()} - expected action='create' got '{message_action}' instead")
+        #         logger.info(
+        #             f"#{os.getpid()} T{threading.get_ident()} - nothing to do..")
 
-        except Exception as e:
-            logger.exception(
-                f"#{os.getpid()} T{threading.get_ident()} - error: {str(e)}")
+        # except Exception as e:
+        #     logger.exception(
+        #         f"#{os.getpid()} T{threading.get_ident()} - error: {str(e)}")
+
+        # finally:
+        #     logger.info(
+        #         f"#{os.getpid()} T{threading.get_ident()} - releasing thread..")
+        #     queue.task_done()
