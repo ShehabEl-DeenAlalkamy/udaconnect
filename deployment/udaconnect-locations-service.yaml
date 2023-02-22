@@ -33,6 +33,7 @@ spec:
       labels:
         service: udaconnect-locations-service
     spec:
+      # TODO: should have init containers for database & kafka
       containers:
         - image: shehabeldeen/udaconnect-locations-service:latest
           name: udaconnect-locations-service
