@@ -47,3 +47,11 @@ class LocationResource(Resource):
         if error:
             return Response(response=json.dumps({'error': error['message']}), status=error['status_code'], mimetype='application/json')
         return location
+
+    @responds(schema=LocationSchema)
+    def delete(self, location_id) -> None:
+        _, error = LocationService.retrieve(location_id)
+        if error:
+            return Response(response=json.dumps({'error': error['message']}), status=error['status_code'], mimetype='application/json')
+
+        return Response(status=201, mimetype='application/json')
