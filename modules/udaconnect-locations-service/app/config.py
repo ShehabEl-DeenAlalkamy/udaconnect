@@ -81,7 +81,8 @@ def _init_logger():
                         datefmt='%d/%m/%y, %H:%M:%S',
                         handlers=handlers)
 
-    # disable common loggers for clean logging
+    # TODO: remove if not needed when deployed in k8s cluster
+    # disable common loggers for clean logging in local development
     logging.getLogger('kafka.conn').disabled = True
     logging.getLogger('kafka.consumer.subscription_state').disabled = True
     logging.getLogger('kafka.producer.record_accumulator').disabled = True

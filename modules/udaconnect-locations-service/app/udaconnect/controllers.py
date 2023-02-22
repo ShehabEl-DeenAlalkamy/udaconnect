@@ -13,7 +13,7 @@ api = Namespace("UdaConnect", description="Connections via geolocation.")  # noq
 
 # TODO: This needs better exception handling
 
-
+# TODO: add DELETE /locations/<location_id>, should use Kafka with action='delete'
 @api.route("/locations")
 @api.route("/locations/<location_id>")
 @api.param("location_id", "Unique ID for a given Location", _in="query")
@@ -21,6 +21,7 @@ class LocationResource(Resource):
     @accepts(schema=LocationSchema)
     @responds(schema=LocationSchema)
     def post(self) -> Location:
+        # TODO: validate request schema and return 4XX bad request on invalid format
         status_code = 202
         res = None
 

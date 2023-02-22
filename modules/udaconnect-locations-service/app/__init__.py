@@ -44,6 +44,7 @@ def create_app(env=None):
         if kafka_producer is not None:
             del kafka_producer
 
+    # TODO: check and test both kafka and postgres connections
     @app.route("/health")
     def health():
         return jsonify("healthy")
