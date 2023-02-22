@@ -5,20 +5,39 @@ from app.udaconnect.schemas import LocationSchema
 
 from typing import Dict
 from geoalchemy2.functions import ST_Point
+from sqlalchemy.orm import exc
 
 
 class LocationService:
     @staticmethod
     def retrieve(location_id) -> Location:
-        location, coord_text = (
-            db.session.query(Location, Location.coordinate.ST_AsText())
-            .filter(Location.id == location_id)
-            .one()
-        )
+        location = None
+        error = None
+        try:
+            location, coord_text = (
+                db.session.query(Location, Location.coordinate.ST_AsText())
+                .filter(Location.id == location_id)
+                .one()
+            )
 
-        # Rely on database to return text form of point to reduce overhead of conversion in app code
-        location.wkt_shape = coord_text
-        return location
+            # Rely on database to return text form of point to reduce overhead of conversion in app code
+            location.wkt_shape = coord_text
+
+        except exc.NoResultFound:
+            _logger.exception(
+                f"error: NoResultFound for location_id={location_id}")
+            error = {
+                'status_code': 404,
+                'message': "Resource not found."
+            }
+        except Exception as e:
+            _logger.exception(
+                f"error: unable to fetch location_id={location_id} reason={str(e)}")
+            error = {
+                'status_code': 500,
+                'message': "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
+            }
+        return location, error
 
     @staticmethod
     def create(location: Dict) -> Location:
