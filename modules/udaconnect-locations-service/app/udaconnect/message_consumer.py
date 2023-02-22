@@ -67,6 +67,10 @@ class MessageConsumer(threading.Thread):
                                         f"#{os.getpid()} T{threading.get_ident()} - created location={LocationSchema().dump(location)}")
                                     logger.info(
                                         f"#{os.getpid()} T{threading.get_ident()} - successfully finished processing")
+                            elif message_action == "delete":
+                                location = dict()
+                                logger.info(
+                                    f"#{os.getpid()} T{threading.get_ident()} - action='{message_action}', deleting 'Location' resource..")
                             else:
                                 logger.exception(
                                     f"#{os.getpid()} T{threading.get_ident()} - expected action='create' got '{message_action}' instead")
