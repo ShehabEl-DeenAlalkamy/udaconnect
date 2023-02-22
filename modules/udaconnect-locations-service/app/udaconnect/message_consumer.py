@@ -8,7 +8,6 @@ import os
 class MessageConsumer(threading.Thread):
     broker = ""
     topic = ""
-    producer = None
 
     def __init__(self, broker, topic, app, group_id="outlaw_group"):
         self.broker = broker
