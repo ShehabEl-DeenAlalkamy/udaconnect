@@ -77,3 +77,8 @@ def _init_logger():
                         format="[%(levelname)s]:%(name)s:%(asctime)s, %(message)s",
                         datefmt='%d/%m/%y, %H:%M:%S',
                         handlers=handlers)
+
+    # TODO: remove if not needed when deployed in k8s cluster
+    # disable common loggers for clean logging in local development
+    logging.getLogger('shapely.geos').disabled = True
+    logging.getLogger('shapely.speedups._speedups').disabled = True
