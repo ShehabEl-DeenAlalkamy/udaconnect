@@ -2,9 +2,11 @@ from app import _logger
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import LocationSchema
 from app.udaconnect.services import LocationService
-from flask import request, Response, g, current_app
+
+from flask import request, Response, g
 from flask_accepts import accepts, responds
 from flask_restx import Namespace, Resource
+import json
 
 DATE_FORMAT = "%Y-%m-%d"
 
@@ -35,9 +37,13 @@ class LocationResource(Resource):
             status_code = 500
             res = "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
 
+            return Response(json.dumps({'error': res}), status=status_code, mimetype='application/json')
+
         return Response(response=res, status=status_code, mimetype='application/json')
 
     @responds(schema=LocationSchema)
     def get(self, location_id) -> Location:
-        location: Location = LocationService.retrieve(location_id)
+        location, error = LocationService.retrieve(location_id)
+        if error:
+            return Response(response=json.dumps({'error': error['message']}), status=error['status_code'], mimetype='application/json')
         return location
