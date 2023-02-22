@@ -1,10 +1,9 @@
-import logging
-from typing import Dict
-
 from app import db
 from app import _logger
 from app.udaconnect.models import Location
 from app.udaconnect.schemas import LocationSchema
+
+from typing import Dict
 from geoalchemy2.functions import ST_Point
 
 # logging.basicConfig(level=logging.WARNING)
