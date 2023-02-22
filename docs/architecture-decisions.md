@@ -16,7 +16,7 @@
        - GET /persons
        - GET /persons/<person_id: int>
        - POST /persons
-       - DELETE /persons/<person_id: int> (new API endpoint)
+       - DELETE /persons/<person_id: int> (new API endpoint), implemented: ❌
 
   2. `udaconnect-connections-service`:
 
@@ -27,6 +27,7 @@
      - RESTful microservice to handle `/locations` resource including:
        - GET /locations/<location_id: int>
        - POST /locations
+       - DELETE /locations/<location_id: int> (new API endpoint), implemented: ✅
 
 - The proposed architecture design concludes the following:
 
@@ -86,7 +87,7 @@
       ```json
       {
         "action": "<action_enum: str>",
-        "message": "<message: obj>"
+        "data": "<data: obj>"
       }
       ```
 
@@ -94,12 +95,12 @@
 
       <br />
 
-      1. action="create":
+      1] action="create":
 
       ```json
       {
         "action": "create",
-        "message": {
+        "data": {
           "person_id": "<person_id: int>",
           "creation_time": "<datatime_format: str>",
           "latitude": "<latitude: str>",
@@ -111,6 +112,21 @@
       -> Kafka consumer will call `create()` method in `Location service`.
 
       Response: `202 - No Content`
+
+      2] action="delete":
+
+      ```json
+      {
+        "action": "delete",
+        "data": {
+          "id": "<location_id: int>"
+        }
+      }
+      ```
+
+      -> Kafka consumer will call `delete()` method in `Location service`.
+
+      Response: `201 - No Content`
 
 [dpendency-graph]: ./assets/imgs/dependency-graph-simple.png
 [arch-design]: ./architecture_design.png
