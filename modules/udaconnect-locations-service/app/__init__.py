@@ -1,4 +1,5 @@
 from app.config import _init_logger
+
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from flask_restx import Api
