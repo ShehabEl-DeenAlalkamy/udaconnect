@@ -1,4 +1,5 @@
 from app.config import _init_logger
+
 from kafka import KafkaProducer
 import json
 import logging
