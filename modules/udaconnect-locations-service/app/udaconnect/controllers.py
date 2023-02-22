@@ -54,4 +54,18 @@ class LocationResource(Resource):
         if error:
             return Response(response=json.dumps({'error': error['message']}), status=error['status_code'], mimetype='application/json')
 
+        err = g.kafka_producer.send_msg({
+            'action': "delete",
+            'data': {
+                'id': location_id
+            }
+        })
+
+        if err:
+            _logger.error(f"Error: {str(err)}")
+            status_code = 500
+            res = "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
+
+            return Response(json.dumps({'error': res}), status=status_code, mimetype='application/json')
+
         return Response(status=201, mimetype='application/json')
