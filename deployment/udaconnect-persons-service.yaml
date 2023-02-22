@@ -1,0 +1,83 @@
+# TODO: add best practices annotations and comments if needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: udaconnect-persons-service
+  name: udaconnect-persons-service
+spec:
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 30003
+  selector:
+    service: udaconnect-persons-service
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: udaconnect-persons-service
+  name: udaconnect-persons-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: udaconnect-persons-service
+  template:
+    metadata:
+      labels:
+        service: udaconnect-persons-service
+    spec:
+      # TODO: should have init containers for database
+      containers:
+        - image: shehabeldeen/udaconnect-persons-service:latest
+          name: udaconnect-persons-service
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_USERNAME
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_NAME
+
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_HOST
+
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_PORT
+      restartPolicy: Always
