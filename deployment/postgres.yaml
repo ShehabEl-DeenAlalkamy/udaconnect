@@ -58,6 +58,7 @@ spec:
       labels:
         app: postgres
     spec:
+      # TODO: seed the deployment automatically with db/*.sql scripts
       containers:
         - name: postgres
           image: postgis/postgis:12-2.5-alpine
