@@ -13,9 +13,6 @@ DATE_FORMAT = "%Y-%m-%d"
 api = Namespace("UdaConnect", description="Connections via geolocation.")  # noqa
 
 
-# TODO: This needs better exception handling
-
-# TODO: add DELETE /locations/<location_id>, should use Kafka with action='delete'
 @api.route("/locations")
 @api.route("/locations/<location_id>")
 @api.param("location_id", "Unique ID for a given Location", _in="query")

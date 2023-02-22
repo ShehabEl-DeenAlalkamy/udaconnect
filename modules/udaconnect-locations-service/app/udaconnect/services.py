@@ -40,6 +40,18 @@ class LocationService:
         return location, error
 
     @staticmethod
+    def delete(location_id) -> Location:
+        location = None
+        error = None
+
+        location, error = LocationService.retrieve(location_id)
+        if not error:
+            db.session.delete(location)
+            db.session.commit()
+
+        return location, error
+
+    @staticmethod
     def create(location: Dict) -> Location:
         validation_results: Dict = LocationSchema().validate(location)
         if validation_results:
