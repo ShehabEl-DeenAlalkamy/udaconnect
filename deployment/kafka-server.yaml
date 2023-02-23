@@ -60,10 +60,11 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9092
-          resources:
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
+          # ! resources have been commented due to limited resources of the VM provisioned  
+          # resources:
+          #   limits:
+          #     memory: "512Mi"
+          #     cpu: "500m"
           readinessProbe:
             tcpSocket:
               port: 9092

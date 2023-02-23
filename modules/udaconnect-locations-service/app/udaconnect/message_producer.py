@@ -25,14 +25,19 @@ class MessageProducer:
                                       retries=3)
 
     def send_msg(self, msg):
-        res = None
+        error = None
         try:
             self.producer.send(self.topic, msg)
             self.producer.flush()
-            logger.info(f"message: {msg} sent successfully..")
+            logger.info(f"message=\"{msg}\" sent successfully..")
         except Exception as e:
-            res = e
-        return res
+            logger.error(
+                f"error: unable to send message=\"{msg}\" reason=\"{str(e)}\"")
+            error = {
+                'status_code': 500,
+                'message': "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
+            }
+        return error
 
     def __str__(self) -> str:
         return f"{self.topic}-producer"
