@@ -34,6 +34,15 @@ spec:
         service: udaconnect-persons-service
     spec:
       # TODO: should have init containers for database
+      initContainers:
+        - name: init-postgres
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for postgres; sleep 2; done; echo "[OK] postgres is ready"',
+            ]
       containers:
         - image: shehabeldeen/udaconnect-persons-service:latest
           name: udaconnect-persons-service
