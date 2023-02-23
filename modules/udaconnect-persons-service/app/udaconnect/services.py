@@ -32,6 +32,10 @@ class PersonService:
             if isinstance(e.orig, UniqueViolation):
                 _logger.error(
                     "IntegrityError: a Person with the same id already exists")
+                _logger.info("rolling database back..")
+                db.session.rollback()
+                _logger.info("flushing database..")
+                db.session.flush()
                 error = {
                     "status_code": 400,
                     "message": "Bad Request: retry again may solve the problem"
