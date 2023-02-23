@@ -38,10 +38,11 @@ spec:
         - image: shehabeldeen/udaconnect-persons-service:latest
           name: udaconnect-persons-service
           imagePullPolicy: Always
-          resources:
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+          # ! resources have been commented due to limited resources of the VM provisioned
+          # resources:
+          #   limits:
+          #     cpu: "500m"
+          #     memory: "512Mi"
           livenessProbe:
             httpGet:
               path: /health

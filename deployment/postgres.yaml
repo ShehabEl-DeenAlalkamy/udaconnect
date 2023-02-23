@@ -86,10 +86,11 @@ spec:
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
-          resources:
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+          # ! resources have been commented due to limited resources of the VM provisioned
+          # resources:
+          #   limits:
+          #     cpu: "500m"
+          #     memory: "512Mi"
           env:
             - name: POSTGRES_USER
               valueFrom:

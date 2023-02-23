@@ -44,13 +44,14 @@ spec:
           image: confluentinc/cp-zookeeper:7.0.1
           ports:
             - containerPort: 2181
-          resources:
-            requests:
-              cpu: "250m"
-              memory: "64Mi"
-            limits:
-              cpu: "250m"
-              memory: "128Mi"
+          # ! resources have been commented due to limited resources of the VM provisioned
+          # resources:
+          #   requests:
+          #     cpu: "250m"
+          #     memory: "64Mi"
+          #   limits:
+          #     cpu: "250m"
+          #     memory: "128Mi"
           # TODO: use ConfigMap and install it as a file
           env:
             - name: ZOOKEEPER_CLIENT_PORT
