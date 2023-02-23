@@ -27,6 +27,8 @@ class PersonService:
             db.session.add(new_person)
             db.session.flush()
             db.session.commit()
+            _logger.info(
+                f"created new person={PersonSchema().dump(new_person)}")
         except IntegrityError as e:
             if isinstance(e.orig, UniqueViolation):
                 _logger.error(
@@ -88,6 +90,7 @@ class PersonService:
         error = None
         try:
             persons = db.session.query(Person).all()
+            _logger.info(f"found {len(persons)} persons")
         except Exception as e:
             _logger.error(
                 f"error: unable to fetch persons reason=\"{str(e)}\"")
