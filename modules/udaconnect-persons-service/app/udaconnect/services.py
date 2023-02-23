@@ -25,7 +25,6 @@ class PersonService:
         error = None
         try:
             db.session.add(new_person)
-            db.session.flush()
             db.session.commit()
             _logger.info(
                 f"created new person={PersonSchema().dump(new_person)}")
@@ -35,7 +34,7 @@ class PersonService:
                     "IntegrityError: a Person with the same id already exists")
                 error = {
                     "status_code": 400,
-                    "message": f"Bad Request: retry again may solve the problem"
+                    "message": "Bad Request: retry again may solve the problem"
                 }
             else:
                 _logger.error(
