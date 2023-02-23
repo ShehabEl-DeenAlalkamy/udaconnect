@@ -98,4 +98,4 @@
             -> Kafka consumer will call delete() method in Location service.
 
             Response:
-                201 - No Content
+                202 - No Content
