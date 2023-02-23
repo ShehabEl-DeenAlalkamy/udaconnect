@@ -1,5 +1,9 @@
-import os
+import app.filters
+
 from typing import List, Type
+import os
+import logging
+import sys
 
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
@@ -56,3 +60,26 @@ EXPORT_CONFIGS: List[Type[BaseConfig]] = [
     ProductionConfig,
 ]
 config_by_name = {cfg.CONFIG_NAME: cfg for cfg in EXPORT_CONFIGS}
+
+
+def _init_logger():
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    handlers = [stderr_handler, stdout_handler]
+
+    info_lvl_filter = app.filters.SingleLevelFilter(logging.INFO, False)
+    info_lvl_filter_inverter = app.filters.SingleLevelFilter(
+        logging.INFO, True)
+
+    stdout_handler.addFilter(info_lvl_filter)
+    stderr_handler.addFilter(info_lvl_filter_inverter)
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format="[%(levelname)s]:%(name)s:%(asctime)s, %(message)s",
+                        datefmt='%d/%m/%y, %H:%M:%S',
+                        handlers=handlers)
+
+    # TODO: remove if not needed when deployed in k8s cluster
+    # disable common loggers for clean logging in local development
+    logging.getLogger('shapely.geos').disabled = True
+    logging.getLogger('shapely.speedups._speedups').disabled = True
