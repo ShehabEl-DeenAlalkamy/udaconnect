@@ -13,6 +13,16 @@ spec:
       targetPort: 2181
 
 ---
+apiVersion: v1
+kind: ConfigMap
+data:
+  ZOOKEEPER_CLIENT_PORT: "2181"
+  ZOOKEEPER_TICK_TIME: "2000"
+  KAFKA_OPTS: "-Dzookeeper.4lw.commands.whitelist=*"
+metadata:
+  name: zookeeper-config
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,8 +54,19 @@ spec:
           # TODO: use ConfigMap and install it as a file
           env:
             - name: ZOOKEEPER_CLIENT_PORT
-              value: "2181"
+              valueFrom:
+                configMapKeyRef:
+                  name: zookeeper-config
+                  key: ZOOKEEPER_CLIENT_PORT
+
             - name: ZOOKEEPER_TICK_TIME
-              value: "2000"
+              valueFrom:
+                configMapKeyRef:
+                  name: zookeeper-config
+                  key: ZOOKEEPER_TICK_TIME
+
             - name: KAFKA_OPTS
-              value: "-Dzookeeper.4lw.commands.whitelist=*"
+              valueFrom:
+                configMapKeyRef:
+                  name: zookeeper-config
+                  key: KAFKA_OPTS
