@@ -1,12 +1,28 @@
-FROM python:3.7-alpine
+# I am referencing the image digest to ensure deterministic build
+FROM python:3.8-alpine@sha256:9e8a162cd85c78458ac47457b08450be8ca4ae5de5ee0f7b23665b6ea2569aed
 
-WORKDIR .
+# Adding doas pacakge, an alternative to sudo package
+RUN apk add doas && \
+    # Following least privilege principle, to ensure we don't provide root access to our container default user
+    addgroup -g 3000 -S python && \
+    adduser -u 3000 -G python -S python
 
+RUN mkdir /usr/app && chown python:python /usr/app
+WORKDIR /usr/app
+
+# Install dependencies
 RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev
-COPY requirements.txt requirements.txt
+
+# Making use of docker layer caching by separating the dependencies from the source code
+COPY --chown=python:python requirements.txt .
 RUN pip install -r requirements.txt
+
+# Adding source code
+COPY --chown=python:python . .
+
+# su python
+USER 3000
 
 EXPOSE 5000
 
-COPY . .
-CMD ["flask", "run", "--host", "0.0.0.0"]
+CMD [ "flask", "run", "--host", "0.0.0.0" ]
