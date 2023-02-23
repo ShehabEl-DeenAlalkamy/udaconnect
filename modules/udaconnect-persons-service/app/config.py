@@ -1,8 +1,9 @@
+import app.filters
+
 from typing import List, Type
 import os
 import logging
 import sys
-import app.filters
 
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
