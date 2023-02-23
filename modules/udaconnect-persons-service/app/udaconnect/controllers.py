@@ -17,7 +17,9 @@ class PersonsResource(Resource):
     @responds(schema=PersonSchema)
     def post(self) -> Person:
         payload = request.get_json()
-        new_person: Person = PersonService.create(payload)
+        new_person, error = PersonService.create(payload)
+        if error:
+            return Response(response=json.dumps({'error': error['message']}), status=error['status_code'], mimetype='application/json')
         return new_person
 
     @responds(schema=PersonSchema, many=True)

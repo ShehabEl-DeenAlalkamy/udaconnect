@@ -22,15 +22,34 @@ class PersonService:
         new_person.first_name = person["first_name"]
         new_person.last_name = person["last_name"]
         new_person.company_name = person["company_name"]
-
+        error = None
         try:
             db.session.add(new_person)
+            db.session.flush()
             db.session.commit()
         except IntegrityError as e:
-            assert isinstance(e.orig, UniqueViolation)
-            raise Exception from e
-
-        return new_person
+            if isinstance(e.orig, UniqueViolation):
+                _logger.exception(
+                    "IntegrityError: a Person with the same id already exists")
+                error = {
+                    "status_code": 400,
+                    "message": f"Bad Request: retry again may solve the problem"
+                }
+            else:
+                _logger.exception(
+                    f"IntegrityError: unable to create 'Person' reason={str(e)}")
+                error = {
+                    'status_code': 500,
+                    'message': "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
+                }
+        except Exception as e:
+            _logger.exception(
+                f"error: unable to create 'Person' reason={str(e)}")
+            error = {
+                'status_code': 500,
+                'message': "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
+            }
+        return new_person, error
 
     @staticmethod
     def retrieve(person_id: int) -> Person:
