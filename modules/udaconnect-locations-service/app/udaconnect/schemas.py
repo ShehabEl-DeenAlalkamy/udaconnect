@@ -1,4 +1,4 @@
-from app.udaconnect.models import Location
+from app.udaconnect.models import Person, Location
 
 from marshmallow import Schema, fields
 
@@ -12,3 +12,18 @@ class LocationSchema(Schema):
 
     class Meta:
         model = Location
+
+
+class PersonSchema(Schema):
+    id = fields.Integer()
+    first_name = fields.String()
+    last_name = fields.String()
+    company_name = fields.String()
+
+    class Meta:
+        model = Person
+
+
+class ConnectionSchema(Schema):
+    location = fields.Nested(LocationSchema)
+    person = fields.Nested(PersonSchema)
