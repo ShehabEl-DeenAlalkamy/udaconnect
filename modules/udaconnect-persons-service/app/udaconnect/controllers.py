@@ -30,6 +30,7 @@ class PersonsResource(Resource):
         return persons
 
 
+# TODO: implement DELETE /persons/<person_id> --> don't forget to delete person locations records
 @api.route("/persons/<person_id>")
 @api.param("person_id", "Unique ID for a given Person", _in="query")
 class PersonResource(Resource):
