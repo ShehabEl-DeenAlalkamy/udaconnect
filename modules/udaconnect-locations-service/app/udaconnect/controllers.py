@@ -64,4 +64,4 @@ class LocationResource(Resource):
 
             return Response(json.dumps({'error': res}), status=status_code, mimetype='application/json')
 
-        return Response(status=201, mimetype='application/json')
+        return Response(status=202, mimetype='application/json')
