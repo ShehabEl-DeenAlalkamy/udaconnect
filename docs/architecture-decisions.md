@@ -126,7 +126,7 @@
 
       -> Kafka consumer will call `delete()` method in `Location service`.
 
-      Response: `201 - No Content`
+      Response: `202 - No Content`
 
 [dpendency-graph]: ./assets/imgs/dependency-graph-simple.png
 [arch-design]: ./architecture_design.png
