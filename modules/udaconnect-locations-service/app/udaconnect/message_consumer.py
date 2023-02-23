@@ -20,7 +20,6 @@ class MessageConsumer(threading.Thread):
         with self.app.app_context():
             from app.udaconnect.services import LocationService
             from app.udaconnect.schemas import LocationSchema
-            from app.udaconnect.models import Location
             from app.config import _init_logger
 
             _init_logger()
@@ -56,15 +55,15 @@ class MessageConsumer(threading.Thread):
                                 logger.info(
                                     f"#{os.getpid()} T{threading.get_ident()} - action='{message_action}', creating new 'Location' resource..")
 
-                                location: Location = LocationService.create(
+                                location, error = LocationService.create(
                                     message_content)
-                                if not location:
+                                if error:
                                     logger.error(
-                                        f"#{os.getpid()} T{threading.get_ident()} - unable to create 'Location' resource")
+                                        f"#{os.getpid()} T{threading.get_ident()} - received error=\"{error}\" on action='{message_action}'")
 
                                 else:
                                     logger.info(
-                                        f"#{os.getpid()} T{threading.get_ident()} - created location={LocationSchema().dump(location)}")
+                                        f"#{os.getpid()} T{threading.get_ident()} - received new created location={LocationSchema().dump(location)}")
                                     logger.info(
                                         f"#{os.getpid()} T{threading.get_ident()} - successfully finished processing")
                             elif message_action == "delete":
@@ -75,24 +74,24 @@ class MessageConsumer(threading.Thread):
                                     message_content['id'])
                                 if error:
                                     logger.error(
-                                        f"#{os.getpid()} T{threading.get_ident()} - unable to delete 'Location' resource")
+                                        f"#{os.getpid()} T{threading.get_ident()} - received error=\"{error}\" on action='{message_action}'")
 
                                 else:
                                     logger.info(
-                                        f"#{os.getpid()} T{threading.get_ident()} - deleted location={LocationSchema().dump(location)}")
+                                        f"#{os.getpid()} T{threading.get_ident()} - received deleted confirmation for location={LocationSchema().dump(location)}")
                                     logger.info(
                                         f"#{os.getpid()} T{threading.get_ident()} - successfully finished processing")
                             else:
                                 logger.exception(
-                                    f"#{os.getpid()} T{threading.get_ident()} - expected action='create' got '{message_action}' instead")
+                                    f"#{os.getpid()} T{threading.get_ident()} - expected action in ['create', 'delete'] got '{message_action}' instead")
                                 logger.info(
                                     f"#{os.getpid()} T{threading.get_ident()} - nothing to do..")
 
                         except Exception as e:
                             logger.exception(
-                                f"#{os.getpid()} T{threading.get_ident()} - error: {str(e)}")
+                                f"#{os.getpid()} T{threading.get_ident()} - error: \"{str(e)}\"")
 
                 except Exception as e:
                     logger.exception(
-                        f"#%{os.getpid()} T{threading.get_ident()} - worker terminated reason={str(e)}")
+                        f"#%{os.getpid()} T{threading.get_ident()} - worker terminated reason=\"{str(e)}\"")
                     consumer.close()
