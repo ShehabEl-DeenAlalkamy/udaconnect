@@ -84,4 +84,15 @@ class PersonService:
 
     @staticmethod
     def retrieve_all() -> List[Person]:
-        return db.session.query(Person).all()
+        persons = []
+        error = None
+        try:
+            persons = db.session.query(Person).all()
+        except Exception as e:
+            _logger.exception(
+                f"error: unable to fetch persons reason={str(e)}")
+            error = {
+                'status_code': 500,
+                'message': "The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application."
+            }
+        return persons, error

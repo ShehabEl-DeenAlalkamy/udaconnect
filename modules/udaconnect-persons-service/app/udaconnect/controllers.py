@@ -24,7 +24,9 @@ class PersonsResource(Resource):
 
     @responds(schema=PersonSchema, many=True)
     def get(self) -> List[Person]:
-        persons: List[Person] = PersonService.retrieve_all()
+        persons, error = PersonService.retrieve_all()
+        if error:
+            return Response(response=json.dumps({'error': error['message']}), status=error['status_code'], mimetype='application/json')
         return persons
 
 
