@@ -1,13 +1,10 @@
 from app import db
+from app import _logger
 from app.udaconnect.models import Connection, Location, Person
 
-import logging
 from datetime import datetime, timedelta
 from typing import Dict, List
 from sqlalchemy.sql import text
-
-logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger("udaconnect-api")
 
 
 class ConnectionService:
@@ -27,11 +24,16 @@ class ConnectionService:
             Location.creation_time >= start_date
         ).all()
 
+        _logger.info(
+            f"person with id={person_id} has been detected in {len(locations)}")
+
         # Cache all users in memory for quick lookup
         # TODO: fetch persons via gRPC GetPersons() stub
         # person_map: Dict[str, Person] = {
         #     person.id: person for person in PersonService.retrieve_all()}
         person_map: Dict[str, Person] = {}
+
+        _logger.info(f"found {len(person_map)} persons")
 
         # Prepare arguments for queries
         data = []
@@ -78,5 +80,8 @@ class ConnectionService:
                         person=person_map[exposed_person_id], location=location,
                     )
                 )
+
+        _logger.info(
+            f"found {len(result)} connections for person with id={person_id}")
 
         return result
