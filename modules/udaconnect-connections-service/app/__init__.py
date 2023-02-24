@@ -30,7 +30,8 @@ def create_app(env=None):
     def before_request():
         if 'grpc_client' not in g:
             _logger.info("initializing grpc client..")
-            g.grpc_client = PersonStub(host='localhost', port=5010)
+            g.grpc_client = PersonStub(
+                host=app.config['PERSON_SVC_GRPC_HOST'], port=app.config['PERSON_SVC_GRPC_PORT'])
 
     @app.teardown_appcontext
     def teardown_grpc_client(exception):
