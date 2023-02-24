@@ -90,4 +90,16 @@ spec:
                 configMapKeyRef:
                   name: db-env
                   key: DB_PORT
+
+            - name: PERSON_SVC_GRPC_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: udaconnect-persons-service-config
+                  key: GRPC_HOST
+
+            - name: PERSON_SVC_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: udaconnect-persons-service-config
+                  key: GRPC_PORT
       restartPolicy: Always
