@@ -18,13 +18,14 @@ class PersonStub:
     def get_persons(self):
         persons = []
 
-        self.__logger(
+        self.__logger.info(
             f"instantiating secure channel with {self.host}:{self.port}")
 
         with grpc.insecure_channel(f"{self.host}:{self.port}") as channel:
             stub = pb2_grpc.PersonServiceStub(channel)
             persons = stub.ListPersons(pb2.EmptyMessage())['persons']
-            self.__logger(f"received {len(persons)} persons")
-            self.__logger("closing channel..")
+            self.__logger.info(
+                f"received {len(persons)} persons from grpc server")
+            self.__logger.info("closing channel..")
 
         return persons
