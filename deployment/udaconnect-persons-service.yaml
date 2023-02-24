@@ -12,6 +12,9 @@ spec:
       port: 5000
       targetPort: 5000
       nodePort: 30003
+    - name: "5010"
+      port: 5010
+      targetPort: 5010
   selector:
     service: udaconnect-persons-service
   type: NodePort
