@@ -29,18 +29,14 @@ class ConnectionService:
             f"person with id={person_id} has been detected in {len(locations)} locations")
 
         # Cache all users in memory for quick lookup
-        # TODO: fetch persons via gRPC GetPersons() stub
         person_map: Dict[str, Person] = {
-            person.id: person for person in PersonService.retrieve_all()}
-
-        persons = g.grpc_client.get_persons()
+            person['id']: Person(id=person['id'],
+                                 first_name=person['firstName'],
+                                 last_name=person['lastName'],
+                                 company_name=person['companyName']) for person in g.grpc_client.get_persons()}
 
         _logger.info(
-            f"received {len(persons)} persons from grpc client and the data={persons}")
-
-        # person_map: Dict[str, Person] = {}
-
-        _logger.info(f"found {len(person_map)} persons")
+            f"received {len(person_map)} persons from grpc client")
 
         # Prepare arguments for queries
         data = []
@@ -92,26 +88,3 @@ class ConnectionService:
             f"found {len(result)} connections for person with id={person_id}")
 
         return result
-
-
-class PersonService:
-    @staticmethod
-    def create(person: Dict) -> Person:
-        new_person = Person()
-        new_person.first_name = person["first_name"]
-        new_person.last_name = person["last_name"]
-        new_person.company_name = person["company_name"]
-
-        db.session.add(new_person)
-        db.session.commit()
-
-        return new_person
-
-    @staticmethod
-    def retrieve(person_id: int) -> Person:
-        person = db.session.query(Person).get(person_id)
-        return person
-
-    @staticmethod
-    def retrieve_all() -> List[Person]:
-        return db.session.query(Person).all()
