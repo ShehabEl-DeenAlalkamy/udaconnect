@@ -13,7 +13,7 @@ db = SQLAlchemy()
 
 
 def create_app(env=None):
-    from app.udaconnect.grpc.client import PersonStub
+    from app.udaconnect.grpc.clients import PersonStub
     from app.config import config_by_name
     from app.routes import register_routes
 
