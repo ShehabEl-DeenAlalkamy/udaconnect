@@ -17,6 +17,15 @@ spec:
   type: NodePort
 
 ---
+apiVersion: v1
+kind: ConfigMap
+data:
+  GRPC_HOST: "udaconnect-persons-service"
+  GRPC_PORT: "5010"
+metadata:
+  name: udaconnect-persons-service-config
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
