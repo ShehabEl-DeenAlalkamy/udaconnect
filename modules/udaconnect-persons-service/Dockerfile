@@ -25,4 +25,7 @@ USER 3000
 
 EXPOSE 5000
 
+# gRPC server port
+EXPOSE 5010
+
 CMD [ "flask", "run", "--host", "0.0.0.0" ]
