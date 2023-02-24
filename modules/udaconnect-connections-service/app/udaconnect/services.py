@@ -3,6 +3,7 @@ from app import _logger
 from app.udaconnect.models import Connection, Location, Person
 
 from datetime import datetime, timedelta
+from flask import g
 from typing import Dict, List
 from sqlalchemy.sql import text
 
@@ -29,9 +30,15 @@ class ConnectionService:
 
         # Cache all users in memory for quick lookup
         # TODO: fetch persons via gRPC GetPersons() stub
-        # person_map: Dict[str, Person] = {
-        #     person.id: person for person in PersonService.retrieve_all()}
-        person_map: Dict[str, Person] = {}
+        person_map: Dict[str, Person] = {
+            person.id: person for person in PersonService.retrieve_all()}
+
+        persons = g.grpc_client.get_persons()
+
+        _logger.info(
+            f"received {len(persons)} persons from grpc client and the data={persons}")
+
+        # person_map: Dict[str, Person] = {}
 
         _logger.info(f"found {len(person_map)} persons")
 
@@ -85,3 +92,26 @@ class ConnectionService:
             f"found {len(result)} connections for person with id={person_id}")
 
         return result
+
+
+class PersonService:
+    @staticmethod
+    def create(person: Dict) -> Person:
+        new_person = Person()
+        new_person.first_name = person["first_name"]
+        new_person.last_name = person["last_name"]
+        new_person.company_name = person["company_name"]
+
+        db.session.add(new_person)
+        db.session.commit()
+
+        return new_person
+
+    @staticmethod
+    def retrieve(person_id: int) -> Person:
+        person = db.session.query(Person).get(person_id)
+        return person
+
+    @staticmethod
+    def retrieve_all() -> List[Person]:
+        return db.session.query(Person).all()
