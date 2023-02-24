@@ -37,7 +37,7 @@ def create_app(env=None):
         grpc_client = g.pop('grpc_client', None)
 
         if grpc_client is not None:
-            _logger.info("removing grpc client..")
+            _logger.info("releasing grpc client from memory..")
             del grpc_client
 
     # TODO: check and test postgres connection
