@@ -25,7 +25,7 @@ class Server:
         _logger.info(f"gRPC server running on {self.address}:{self.port}")
         self.__server.add_insecure_port(f"{self.address}:{self.port}")
         self.__server.start()
-        self.__server.wait_for_termination()
+        # self.__server.wait_for_termination()
 
     def stop(self):
         _logger.info("shutting down gRPC server gracefully")
