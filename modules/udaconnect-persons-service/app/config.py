@@ -18,6 +18,8 @@ class BaseConfig:
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    GRPC_PORT = os.environ["GRPC_PORT"]
+
 
 class DevelopmentConfig(BaseConfig):
     CONFIG_NAME = "dev"

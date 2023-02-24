@@ -6,7 +6,7 @@ import os
 
 app = create_app(os.getenv("FLASK_ENV") or "test")
 
-grpc_server = Server(app, port=5010)
+grpc_server = Server(app, port=app.config['GRPC_PORT'])
 grpc_server.serve()
 
 if __name__ == "__main__":
