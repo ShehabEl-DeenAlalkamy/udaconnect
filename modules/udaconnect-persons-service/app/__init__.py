@@ -13,6 +13,7 @@ db = SQLAlchemy()
 
 
 def create_app(env=None):
+    from app.udaconnect.grpc.server import Server
     from app.config import config_by_name
     from app.routes import register_routes
 
@@ -24,6 +25,9 @@ def create_app(env=None):
 
     register_routes(api, app)
     db.init_app(app)
+
+    grpc_server = Server(app, '[::]', 5010)
+    grpc_server.serve()
 
     # TODO: check and test postgres connection
     @app.route("/health")
