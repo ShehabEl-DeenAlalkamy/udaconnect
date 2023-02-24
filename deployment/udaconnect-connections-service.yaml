@@ -11,7 +11,7 @@ spec:
     - name: "5000"
       port: 5000
       targetPort: 5000
-      nodePort: 30003
+      nodePort: 30004
   selector:
     service: udaconnect-connections-service
   type: NodePort
@@ -42,6 +42,14 @@ spec:
               "sh",
               "-c",
               'until nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for postgres; sleep 2; done; echo "[OK] postgres is ready"',
+            ]
+        - name: init-udaconnect-persons-service
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup udaconnect-persons-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for udaconnect-persons-service; sleep 2; done; echo "[OK] udaconnect-persons-service is ready"',
             ]
       containers:
         - image: shehabeldeen/udaconnect-connections-service:latest
