@@ -11,7 +11,7 @@ _logger = logging.getLogger('udaconnect.persons_svc.grpc.server')
 
 
 class Server:
-    def __init__(self, app, address, port, max_workers=2):
+    def __init__(self, app, port, address='[::]', max_workers=2):
         self.app = app
         self.address = address
         self.port = port

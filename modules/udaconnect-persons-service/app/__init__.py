@@ -26,7 +26,7 @@ def create_app(env=None):
     register_routes(api, app)
     db.init_app(app)
 
-    grpc_server = Server(app, '[::]', 5010)
+    grpc_server = Server(app, port=5010)
     grpc_server.serve()
 
     # TODO: check and test postgres connection
