@@ -25,7 +25,7 @@ class ConnectionService:
         ).all()
 
         _logger.info(
-            f"person with id={person_id} has been detected in {len(locations)}")
+            f"person with id={person_id} has been detected in {len(locations)} locations")
 
         # Cache all users in memory for quick lookup
         # TODO: fetch persons via gRPC GetPersons() stub
