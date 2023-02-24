@@ -8,7 +8,8 @@ class PersonService(pb2_grpc.PersonServiceServicer):
         pb2_grpc.PersonServiceServicer.__init__(self)
 
     def ListPersons(self, request, context):
-        with self.app.context():
+        with self.app.app_context():
+            from app.udaconnect.schemas import PersonSchema
             from app.udaconnect import services as app_services
             from app.config import _init_logger
             import logging
@@ -19,7 +20,7 @@ class PersonService(pb2_grpc.PersonServiceServicer):
 
             persons, _ = app_services.PersonService.retrieve_all()
 
-            logger.info(f"received {len(persons)} persons")
+            logger.info(f"received {len(persons)} persons from main server")
             logger.info(f"sending back to client..")
 
-            return pb2.PersonMessageList(**persons)
+            return pb2.PersonMessageList(persons=[pb2.PersonMessage(**PersonSchema().dump(person)) for person in persons])
