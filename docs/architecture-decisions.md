@@ -16,7 +16,6 @@
        - GET /persons
        - GET /persons/<person_id: int>
        - POST /persons
-       - DELETE /persons/<person_id: int> (new API endpoint), implemented: ❌
 
   2. `udaconnect-connections-service`:
 
@@ -27,7 +26,6 @@
      - RESTful microservice to handle `/locations` resource including:
        - GET /locations/<location_id: int>
        - POST /locations
-       - DELETE /locations/<location_id: int> (new API endpoint), implemented: ✅
 
 - The proposed architecture design concludes the following:
 
@@ -45,7 +43,7 @@
       - is fast.
       - is more structured.
       - leverages HTTP/2 which means overall better security and performance.
-    - PersonService GetPersons() method will be used to retrieve all the persons.
+    - PersonService ListPersons() method will be used to retrieve all the persons.
     - in the future, when the 'person' table gets crowded, gRPC will reduce the payload size since it's being serialized in binary data format.
     - since gRPC is not as widely adopted as REST APIs, it makes sense to leverage gRPC for internal microservices communication.
 
@@ -53,20 +51,18 @@
 
       ```proto
       message PersonMessage {
-          int32 id = 1;
-          string first_name = 2;
-          string last_name = 3;
-          string company_name = 4;
+        int32 id = 1;
+        string first_name = 2;
+        string last_name = 3;
+        string company_name = 4;
       }
 
       message EmptyMessage {}
 
-      message PersonMessageList {
-          repeated PersonMessage persons = 1;
-      }
+      message PersonMessageList { repeated PersonMessage persons = 1; }
 
       service PersonService {
-          rpc GetPersons(EmptyMessage) returns (PersonMessageList);
+        rpc ListPersons(EmptyMessage) returns (PersonMessageList);
       }
       ```
 
@@ -76,7 +72,7 @@
     - with an asynchronous request, we can make better use of our time by doing something else instead of waiting for the server to respond.
     - this will make `UdaConnect` remain available to accept messages, more fault tolerant and reduce losing messages during downtime.
     - since POST /locations isn't expected to be much used, it makes more sense to process creating new Location resources in batches instead of on-demand.
-    - Kafka needs to have 'locations' topic.
+    - Kafka needs to have `'locations'` topic.
 
   - Since Kafka doesn't enforce the structure of the input data, Kafka will be exposed using REST Location service REST API:
 
@@ -128,5 +124,33 @@
 
       Response: `202 - No Content`
 
+## Suggestions
+
+- UdaConnect Mobile devices clients should implement `gRPC` with `udaconnect-locations-service` microservice for seamless and fast performance, this means `udaconnect-locations-service` should implement `gRPC` interface.
+
+- The following endpoints should be implemented:
+
+  - `DELETE persons/<person_id: int>`:
+    - `location` table references `person` table on `person_id`.
+    - either set constraint to `CASCADE` on `DELETE` or `DELETE /persons/<person_id: int>/locations` first.
+  - `GET persons/<person_id: int>/locations`
+  - `DELETE persons/<person_id: int>/locations`
+  - `GET /locations`
+  - `DELETE /locations/<location_id: int>`
+
+- Cache `GET /persons` in `ConnectionService.find_contacts()`.
+
+## Suggestions Status
+
+| ID  |                  Suggestion                   |    Date    |      PR      |       Closed       |
+| :-: | :-------------------------------------------: | :--------: | :----------: | :----------------: |
+|  1  | `udaconnect-locations-service` gRPC interface |    N/A     |     N/A      |        :x:         |
+|  2  |       `DELETE persons/<person_id: int>`       |    N/A     |     N/A      |        :x:         |
+|  3  |   `GET persons/<person_id: int>/locations`    |    N/A     |     N/A      |        :x:         |
+|  4  |  `DELETE persons/<person_id: int>/locations`  |    N/A     |     N/A      |        :x:         |
+|  5  |               `GET /locations`                |    N/A     |     N/A      |        :x:         |
+|  6  |    `DELETE /locations/<location_id: int>`     | 22-02-2023 | [PR-1][pr-1] | :white_check_mark: |
+
 [dpendency-graph]: ./assets/imgs/dependency-graph-simple.png
 [arch-design]: ./architecture_design.png
+[pr-1]: https://github.com/ShehabEl-DeenAlalkamy/udaconnect/pull/1

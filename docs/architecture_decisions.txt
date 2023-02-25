@@ -1,3 +1,9 @@
++------------------------------------------------------------------------------------------------------+
+|                                                                                                      |
+| IMPORTANT: please refer to docs/architecture_decisions.md for better presentation and richer context |
+|                                                                                                      |
++------------------------------------------------------------------------------------------------------+
+
 - Given the dependency graph found in 'docs/assets/imgs/dependency-graph-simple.png', UdaConnect can be refactored into 3 services:
 
     1- udaconnect-persons-service:
@@ -5,7 +11,6 @@
             - GET /persons
             - GET /persons/<person_id: int>
             - POST /persons
-            - DELETE /persons/<person_id: int> (new API endpoint), implemented: ❌
     
     2- udaconnect-connections-service:
         - RESTful microservice to handle /connections resource including:
@@ -29,12 +34,11 @@
             - is fast.
             - is more structured.
             - leverages HTTP/2 which means overall better security and performance.
-        - PersonService GetPersons() method will be used to retrieve all the persons.
+        - PersonService ListPersons() method will be used to retrieve all the persons.
         - in the future, when the 'person' table gets crowded, gRPC will reduce the payload size since it's being serialized in binary data format.
         - since gRPC is not as widely adopted as REST APIs, it makes sense to leverage gRPC for internal microservices communication.
 
         - Protobuf Message:
-
             message PersonMessage {
                 int32 id = 1;
                 string first_name = 2;
@@ -44,12 +48,10 @@
 
             message EmptyMessage {}
 
-            message PersonMessageList {
-                repeated PersonMessage persons = 1;
-            }
+            message PersonMessageList { repeated PersonMessage persons = 1; }
 
             service PersonService {
-                rpc GetPersons(EmptyMessage) returns (PersonMessageList);
+                rpc ListPersons(EmptyMessage) returns (PersonMessageList);
             }
 
 
@@ -87,7 +89,7 @@
             Response:
                 202 - No Content
 
-            1- action="delete":
+            2- action="delete":
             {
                 "action": "delete",
                 "data": {
