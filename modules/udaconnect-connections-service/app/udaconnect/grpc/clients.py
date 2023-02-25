@@ -20,14 +20,14 @@ class PersonStub:
         persons = []
 
         self.__logger.info(
-            f"instantiating secure channel with {self.host}:{self.port}")
+            f"instantiating insecure channel with gRPC server at {self.host}:{self.port}")
 
         with grpc.insecure_channel(f"{self.host}:{self.port}") as channel:
             stub = pb2_grpc.PersonServiceStub(channel)
             persons = MessageToDict(stub.ListPersons(
                 pb2.EmptyMessage()))['persons']
             self.__logger.info(
-                f"received {len(persons)} persons from grpc server")
+                f"received {len(persons)} persons from gRPC server")
             self.__logger.info("closing channel..")
 
         return persons

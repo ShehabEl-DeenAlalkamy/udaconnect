@@ -29,7 +29,7 @@ def create_app(env=None):
     @app.before_request
     def before_request():
         if 'grpc_client' not in g:
-            _logger.info("initializing grpc client..")
+            _logger.info("initializing gRPC client..")
             g.grpc_client = PersonStub(
                 host=app.config['PERSON_SVC_GRPC_HOST'], port=app.config['PERSON_SVC_GRPC_PORT'])
 
@@ -38,7 +38,7 @@ def create_app(env=None):
         grpc_client = g.pop('grpc_client', None)
 
         if grpc_client is not None:
-            _logger.info("releasing grpc client from memory..")
+            _logger.info("releasing gRPC client from memory..")
             del grpc_client
 
     # TODO: check and test postgres connection

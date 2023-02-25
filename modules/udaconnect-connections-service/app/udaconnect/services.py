@@ -36,7 +36,7 @@ class ConnectionService:
                                  company_name=person['companyName']) for person in g.grpc_client.get_persons()}
 
         _logger.info(
-            f"received {len(person_map)} persons from grpc client")
+            f"received {len(person_map)} persons from gRPC client")
 
         # Prepare arguments for queries
         data = []
