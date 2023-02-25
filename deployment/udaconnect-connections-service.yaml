@@ -4,46 +4,34 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    service: udaconnect-persons-service
-  name: udaconnect-persons-service
+    service: udaconnect-connections-service
+  name: udaconnect-connections-service
 spec:
   ports:
     - name: "5000"
       port: 5000
       targetPort: 5000
-      nodePort: 30003
-    - name: "5010"
-      port: 5010
-      targetPort: 5010
+      nodePort: 30004
   selector:
-    service: udaconnect-persons-service
+    service: udaconnect-connections-service
   type: NodePort
-
----
-apiVersion: v1
-kind: ConfigMap
-data:
-  GRPC_HOST: "udaconnect-persons-service"
-  GRPC_PORT: "5010"
-metadata:
-  name: udaconnect-persons-service-config
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service: udaconnect-persons-service
-  name: udaconnect-persons-service
+    service: udaconnect-connections-service
+  name: udaconnect-connections-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: udaconnect-persons-service
+      service: udaconnect-connections-service
   template:
     metadata:
       labels:
-        service: udaconnect-persons-service
+        service: udaconnect-connections-service
     spec:
       # TODO: should have init containers for database
       initContainers:
@@ -55,9 +43,17 @@ spec:
               "-c",
               'until nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for postgres; sleep 2; done; echo "[OK] postgres is ready"',
             ]
+        - name: init-udaconnect-persons-service
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup udaconnect-persons-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for udaconnect-persons-service; sleep 2; done; echo "[OK] udaconnect-persons-service is ready"',
+            ]
       containers:
-        - image: shehabeldeen/udaconnect-persons-service:latest
-          name: udaconnect-persons-service
+        - image: shehabeldeen/udaconnect-connections-service:latest
+          name: udaconnect-connections-service
           imagePullPolicy: Always
           # ! resources have been commented due to limited resources of the VM provisioned
           # resources:
@@ -103,7 +99,13 @@ spec:
                   name: db-env
                   key: DB_PORT
 
-            - name: GRPC_PORT
+            - name: PERSON_SVC_GRPC_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: udaconnect-persons-service-config
+                  key: GRPC_HOST
+
+            - name: PERSON_SVC_GRPC_PORT
               valueFrom:
                 configMapKeyRef:
                   name: udaconnect-persons-service-config
