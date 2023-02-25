@@ -16,7 +16,7 @@ vagrant ssh -c "sudo install -C -m 600 -o vagrant -g vagrant /etc/rancher/k3s/k3
 echo connection success..
 
 echo copying k3s kubeconfig to "${config_path}"
-sshpass -p "${SSH_USER_PASS}" scp -P "${SSH_PORT}" "${SSH_USER}@${SSH_HOST}":~/config "${config_path}"
+sshpass -p "${SSH_USER_PASS}" scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P "${SSH_PORT}" "${SSH_USER}@${SSH_HOST}":~/config "${config_path}" >/dev/null 2>&1
 
 # remove config file from guest machine vagrant home directory
 vagrant ssh -c "rm -rf ~/config" >/dev/null 2>&1
