@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package person;
 
+// TODO: improve message to accomodate erros scenarios
+
 message PersonMessage {
   int32 id = 1;
   string first_name = 2;

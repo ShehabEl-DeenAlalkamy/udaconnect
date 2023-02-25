@@ -18,6 +18,7 @@ class PersonService(pb2_grpc.PersonServiceServicer):
             logger = logging.getLogger(
                 'udaconnect.persons_svc.grpc.server.person_svc')
 
+            # TODO: receive error, and handle error scenario
             persons, _ = app_services.PersonService.retrieve_all()
 
             logger.info(f"received {len(persons)} persons from main server")

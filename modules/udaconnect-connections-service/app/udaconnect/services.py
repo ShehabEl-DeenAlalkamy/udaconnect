@@ -28,6 +28,7 @@ class ConnectionService:
         _logger.info(
             f"person with id={person_id} has been detected in {len(locations)} locations")
 
+        # TODO: handle errors scenarios
         # Cache all users in memory for quick lookup
         person_map: Dict[str, Person] = {
             person['id']: Person(id=person['id'],

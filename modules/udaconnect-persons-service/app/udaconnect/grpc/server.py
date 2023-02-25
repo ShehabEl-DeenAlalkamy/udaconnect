@@ -20,6 +20,7 @@ class Server:
             futures.ThreadPoolExecutor(max_workers=self.max_workers))
 
     def serve(self):
+        # TODO: handle possible exceptions
         pb2_grpc.add_PersonServiceServicer_to_server(
             PersonService(self.app), self.__server)
         _logger.info(f"gRPC server running on {self.address}:{self.port}")

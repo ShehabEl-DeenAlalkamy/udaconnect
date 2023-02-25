@@ -22,6 +22,7 @@ class PersonStub:
         self.__logger.info(
             f"instantiating insecure channel with gRPC server at {self.host}:{self.port}")
 
+        # TODO: handle possible exceptions
         with grpc.insecure_channel(f"{self.host}:{self.port}") as channel:
             stub = pb2_grpc.PersonServiceStub(channel)
             persons = MessageToDict(stub.ListPersons(
