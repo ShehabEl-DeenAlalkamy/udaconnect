@@ -11,11 +11,10 @@ ENV NODE_ENV production
 RUN mkdir -p /usr/src/app && chown node:node /usr/src/app
 WORKDIR /usr/src/app
 
-RUN npm install react-scripts@3.4.3 -g
-
 # install dependencies and leverage docker caching layer
 COPY --chown=node:node package*.json /usr/src/app/
 RUN npm install
+RUN npm install react-scripts@3.4.3 -g
 
 COPY --chown=node:node . /usr/src/app
 
