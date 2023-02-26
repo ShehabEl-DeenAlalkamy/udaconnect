@@ -2,6 +2,7 @@
 	"info": {
 		"_postman_id": "45607d47-8987-4ba5-8305-f46957beb35a",
 		"name": "UdaConnect API v0.2.0",
+		"description": "UdaConnect is a service to help attendees make connections that can inform attendees if they have attended the same booths and presentations at an event.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "17573212"
 	},
@@ -97,7 +98,7 @@
 					"response": []
 				}
 			],
-			"description": "Connections via geolocation."
+			"description": "Person API manages conferences attendees information."
 		},
 		{
 			"name": "Location API v0.1.0",
@@ -203,7 +204,7 @@
 					"response": []
 				}
 			],
-			"description": "Connections via geolocation."
+			"description": "Location API helps attendees make connections by managing their geolocations"
 		},
 		{
 			"name": "Connection API v0.1.0",
@@ -271,7 +272,7 @@
 					"response": []
 				}
 			],
-			"description": "Connections via geolocation."
+			"description": "Connection API helps attendees make connections inform them if they have attended the same booths and presentations at an event."
 		}
 	],
 	"event": [
