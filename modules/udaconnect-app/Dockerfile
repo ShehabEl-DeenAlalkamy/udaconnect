@@ -2,7 +2,7 @@
 FROM node:14.8.0-alpine3.12@sha256:985f18d0168e1d1d2ab8492f7be3ffec9e22c3db3ce242e01c16c36e08ce35eb
 
 # an init process, in that it is invoked with PID 1, then spawns our Node.js application as another process whilst ensuring that all signals are proxied to that Node.js proce
-RUN apk add dumb-init
+# RUN apk add dumb-init
 
 # sometimes significant to production performance
 ENV NODE_ENV production
@@ -23,4 +23,4 @@ USER node
 
 EXPOSE 3000
 
-CMD [ "dumb-init", "node", "src/index.js" ]
+CMD ["npm", "start"]
