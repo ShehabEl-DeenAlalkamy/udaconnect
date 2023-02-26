@@ -1,0 +1,135 @@
+---
+openapi: "3.0.2"
+info:
+  title: UdaConnect Connection API
+  description: UdaConnect Connection API helps attendees make connections inform them if they have attended the same booths and presentations at an event.
+  contact:
+    name: Shehab El-Deen Alalkamy
+    url: https://www.linkedin.com/in/shehab-el-deen
+    email: shehabeldeenalalkamy@gmail.com
+  termsOfService: http://example.com/terms
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: "0.1.0"
+servers:
+  - url: http://localhost:30004/api
+    description: Development Server
+tags:
+  - name: UdaConnect
+    description: Connections via geolocation.
+paths:
+  /persons/{person_id}/connections:
+    get:
+      parameters:
+        - $ref: "#/components/parameters/PersonIdPathParam"
+        - $ref: "#/components/parameters/StartDateParam"
+        - $ref: "#/components/parameters/EndDateParam"
+        - $ref: "#/components/parameters/DistanceParam"
+      summary: List Person Connections
+      description: Get list of **person's** connections via geolocations
+      operationId: listPersonConnsV1
+      tags:
+        - UdaConnect
+      responses:
+        "200":
+          description: List of Person's Connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionList"
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+
+components:
+  parameters:
+    PersonIdPathParam:
+      name: person_id
+      in: path
+      description: Unique ID for a given Person
+      required: true
+      schema:
+        type: integer
+        format: int32
+        example: 5
+    StartDateParam:
+      name: start_date
+      in: query
+      description: Lower bound of date range
+      required: true
+      schema:
+        type: string
+        format: date
+        example: 2020-01-01
+    EndDateParam:
+      name: end_date
+      in: query
+      description: Upper bound of date range
+      required: true
+      schema:
+        type: string
+        format: date
+        example: 2020-12-30
+    DistanceParam:
+      name: distance
+      in: query
+      description: Proximity to a given user in meters
+      required: true
+      schema:
+        type: string
+        example: 5
+  schemas:
+    Location:
+      type: object
+      description: Location Object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 31
+        person_id:
+          type: integer
+          format: int32
+          example: 5
+        longitude:
+          type: string
+          example: "37.553441"
+        latitude:
+          type: string
+          example: "-122.290524"
+        creation_time:
+          type: string
+          format: date-time
+          example: "2020-08-15T10:37:06"
+    Person:
+      type: object
+      description: Person Object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 5
+        first_name:
+          type: string
+          example: Taco
+        last_name:
+          type: string
+          example: Fargo
+        company_name:
+          type: string
+          example: Alpha Omega Upholstery
+    Connection:
+      type: object
+      description: Connection Object
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+        location:
+          $ref: "#/components/schemas/Location"
+    ConnectionList:
+      type: array
+      description: List of Connections
+      items:
+        $ref: "#/components/schemas/Connection"
