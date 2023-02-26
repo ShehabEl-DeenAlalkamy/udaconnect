@@ -14,7 +14,7 @@ WORKDIR /usr/src/app
 RUN npm install react-scripts@3.4.3 -g
 
 # install dependencies and leverage docker caching layer
-COPY package*.json --chown=node:node /usr/src/app/
+COPY --chown=node:node package*.json /usr/src/app/
 RUN npm install
 
 COPY --chown=node:node . /usr/src/app
