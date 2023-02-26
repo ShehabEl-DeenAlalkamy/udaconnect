@@ -11,7 +11,7 @@ config_path=${1:-"${HOME}/.kube/config"}
 [[ -z "${SSH_HOST}" ]] && SSH_HOST="127.0.0.1"
 
 echo connecting to "${SSH_USER}@${SSH_HOST}:${SSH_PORT}"..
-vagrant ssh -c "sudo install -C -m 600 -o vagrant -g vagrant /etc/rancher/k3s/k3s.yaml ./config" >/dev/null 2>&1
+vagrant ssh -c "sudo install -C -m 600 -o vagrant -g vagrant /etc/rancher/k3s/k3s.yaml ~/config" >/dev/null 2>&1
 
 echo connection success..
 
