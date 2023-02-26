@@ -1,0 +1,108 @@
+# TODO: add best practices annotations and comments if needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: udaconnect-locations-service
+  name: udaconnect-locations-service
+spec:
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 30002
+  selector:
+    service: udaconnect-locations-service
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: udaconnect-locations-service
+  name: udaconnect-locations-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: udaconnect-locations-service
+  template:
+    metadata:
+      labels:
+        service: udaconnect-locations-service
+    spec:
+      # TODO: should have init containers for database & kafka
+      initContainers:
+        - name: init-postgres
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for postgres; sleep 2; done; echo "[OK] postgres is ready"',
+            ]
+        - name: init-kafka-server
+          image: busybox:1.28
+          command: ["sh", "-c", "sleep 60"]
+      containers:
+        - image: shehabeldeen/udaconnect-locations-service:latest
+          name: udaconnect-locations-service
+          imagePullPolicy: Always
+          # ! resources have been commented due to limited resources of the VM provisioned
+          # resources:
+          #   limits:
+          #     cpu: "500m"
+          #     memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_USERNAME
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_NAME
+
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_HOST
+
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_PORT
+
+            - name: KAFKA_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKA_BROKER
+
+            - name: KAFKA_LOCATION_SVC_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKA_LOCATION_SVC_TOPIC
+      restartPolicy: Always

@@ -1,0 +1,32 @@
++------------------------------------------------------------------------------------------------------+
+|                                                                                                      |
+| IMPORTANT: please refer to docs/architecture_decisions.md for better presentation and richer context |
+|                                                                                                      |
++------------------------------------------------------------------------------------------------------+
+
+- Protobuf Message(s):
+
+    message PersonMessage {
+        int32 id = 1;
+        string first_name = 2;
+        string last_name = 3;
+        string company_name = 4;
+    }
+
+    message EmptyMessage {}
+
+    message PersonMessageList { repeated PersonMessage persons = 1; }
+
+  Service(s):
+
+    service PersonService {
+        rpc ListPersons(EmptyMessage) returns (PersonMessageList);
+    }
+
+- The gRPC interface is implemented on udaconnect-persons-service where the gRPC server resides and the gRPC stub(client) is located in udaconnect-connections-service
+
+- on GET /persons/<person_id: int>/connections, the gRPC stub will instantiate a channel with the gRPC server and calls the ListPersons() method implemented by PersonService(person_pb2_grpc.PersonServiceServicer) object.
+
+- Sample Request:
+
+    $ curl "${CONN_SVC_BASE_URL}"/api/persons/5/connections\?start_date\=2020-01-01\&end_date\=2020-12-30\&distance\=5 | jq

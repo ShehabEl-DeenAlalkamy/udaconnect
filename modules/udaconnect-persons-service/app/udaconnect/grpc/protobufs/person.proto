@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package person;
+
+// TODO: improve message to accomodate erros scenarios
+
+message PersonMessage {
+  int32 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string company_name = 4;
+}
+
+message EmptyMessage {}
+
+message PersonMessageList { repeated PersonMessage persons = 1; }
+
+service PersonService {
+  rpc ListPersons(EmptyMessage) returns (PersonMessageList);
+}

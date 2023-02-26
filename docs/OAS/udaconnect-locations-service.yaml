@@ -1,0 +1,122 @@
+---
+openapi: "3.0.2"
+info:
+  title: UdaConnect Location API
+  description: UdaConnect Location API helps attendees make connections by managing their geolocations
+  contact:
+    name: Shehab El-Deen Alalkamy
+    url: https://www.linkedin.com/in/shehab-el-deen
+    email: shehabeldeenalalkamy@gmail.com
+  termsOfService: http://example.com/terms
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: "0.1.0"
+servers:
+  - url: http://localhost:30002/api
+    description: Development Server
+tags:
+  - name: UdaConnect
+    description: Connections via geolocation.
+paths:
+  /locations:
+    post:
+      summary: Create Location
+      description: Create Geo-Location Resource
+      operationId: createLocationV1
+      tags:
+        - UdaConnect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Location"
+        description: Person location details
+      responses:
+        "202":
+          description: Accepted for processing
+        "400":
+          description: Invalid input, object invalid
+        "500":
+          description: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+
+  /locations/{location_id}:
+    get:
+      summary: Get Location
+      description: Get Location resource by id
+      operationId: getLocationV1
+      parameters:
+        - $ref: "#/components/parameters/LocationIdPathParam"
+      tags:
+        - UdaConnect
+      responses:
+        "200":
+          description: Location Object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        "400":
+          description: Bad Request
+        "404":
+          description: Resource not found
+        "500":
+          description: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+    delete:
+      summary: Delete Location
+      description: Erase Location resource from database
+      operationId: deleteLocationV1
+      parameters:
+        - $ref: "#/components/parameters/LocationIdPathParam"
+      tags:
+        - UdaConnect
+      responses:
+        "202":
+          description: Accepted for processing
+        "400":
+          description: Bad Request
+        "404":
+          description: Resource not found
+        "500":
+          description: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+
+components:
+  parameters:
+    LocationIdPathParam:
+      name: location_id
+      in: path
+      description: Unique ID for a given Location
+      required: true
+      schema:
+        type: integer
+        format: int32
+        example: 31
+  schemas:
+    Location:
+      type: object
+      description: Location Object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 31
+          readOnly: true
+        person_id:
+          type: integer
+          format: int32
+          example: 5
+        longitude:
+          type: string
+          example: "37.553441"
+        latitude:
+          type: string
+          example: "-122.290524"
+        creation_time:
+          type: string
+          format: date-time
+          example: "2020-08-15T10:37:06"
+    LocationList:
+      type: array
+      description: List of Locations
+      items:
+        $ref: "#/components/schemas/Location"

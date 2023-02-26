@@ -1,0 +1,111 @@
+# TODO: add best practices annotations and comments if needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: udaconnect-persons-service
+  name: udaconnect-persons-service
+spec:
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 30003
+    - name: "5010"
+      port: 5010
+      targetPort: 5010
+  selector:
+    service: udaconnect-persons-service
+  type: NodePort
+
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  GRPC_HOST: "udaconnect-persons-service"
+  GRPC_PORT: "5010"
+metadata:
+  name: udaconnect-persons-service-config
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: udaconnect-persons-service
+  name: udaconnect-persons-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: udaconnect-persons-service
+  template:
+    metadata:
+      labels:
+        service: udaconnect-persons-service
+    spec:
+      # TODO: should have init containers for database
+      initContainers:
+        - name: init-postgres
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for postgres; sleep 2; done; echo "[OK] postgres is ready"',
+            ]
+      containers:
+        - image: shehabeldeen/udaconnect-persons-service:latest
+          name: udaconnect-persons-service
+          imagePullPolicy: Always
+          # ! resources have been commented due to limited resources of the VM provisioned
+          # resources:
+          #   limits:
+          #     cpu: "500m"
+          #     memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_USERNAME
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_NAME
+
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_HOST
+
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_PORT
+
+            - name: GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: udaconnect-persons-service-config
+                  key: GRPC_PORT
+      restartPolicy: Always

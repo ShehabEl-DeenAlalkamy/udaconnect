@@ -1,0 +1,338 @@
+{
+	"info": {
+		"_postman_id": "45607d47-8987-4ba5-8305-f46957beb35a",
+		"name": "UdaConnect API v0.2.0",
+		"description": "UdaConnect is a service to help attendees make connections that can inform attendees if they have attended the same booths and presentations at an event.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17573212"
+	},
+	"item": [
+		{
+			"name": "Person API v0.1.0",
+			"item": [
+				{
+					"name": "create_person_resource",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Abdelrahman\",\n    \"last_name\": \"Saleh\",\n    \"company_name\": \"Bank Al-Ahly\"\n}"
+						},
+						"url": {
+							"raw": "{{person_svc_base_url}}/persons",
+							"host": [
+								"{{person_svc_base_url}}"
+							],
+							"path": [
+								"persons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_all_persons_resources",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{person_svc_base_url}}/persons",
+							"host": [
+								"{{person_svc_base_url}}"
+							],
+							"path": [
+								"persons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_person_resource",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{person_svc_base_url}}/persons/:person_id",
+							"host": [
+								"{{person_svc_base_url}}"
+							],
+							"path": [
+								"persons",
+								":person_id"
+							],
+							"variable": [
+								{
+									"key": "person_id",
+									"value": "3",
+									"description": "{{person_id_desc}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Swagger specifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{person_svc_host}}/swagger.json",
+							"protocol": "http",
+							"host": [
+								"{{person_svc_host}}"
+							],
+							"path": [
+								"swagger.json"
+							]
+						},
+						"description": "The API Swagger specifications as JSON"
+					},
+					"response": []
+				}
+			],
+			"description": "Person API manages conferences attendees information."
+		},
+		{
+			"name": "Location API v0.1.0",
+			"item": [
+				{
+					"name": "create_location_resource",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"person_id\": \"1\",\n    \"latitude\": \"30.212412\",\n    \"longitude\": \"63.9720448\",\n    \"creation_time\": \"2023-02-01 8:01:03\"\n}"
+						},
+						"url": {
+							"raw": "{{location_svc_base_url}}/locations",
+							"host": [
+								"{{location_svc_base_url}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_location_resource",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{location_svc_base_url}}/locations/:location_id",
+							"host": [
+								"{{location_svc_base_url}}"
+							],
+							"path": [
+								"locations",
+								":location_id"
+							],
+							"variable": [
+								{
+									"key": "location_id",
+									"value": "2",
+									"description": "{{location_id_desc}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_location_resource",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{location_svc_base_url}}/locations/:location_id",
+							"host": [
+								"{{location_svc_base_url}}"
+							],
+							"path": [
+								"locations",
+								":location_id"
+							],
+							"variable": [
+								{
+									"key": "location_id",
+									"value": "2",
+									"description": "{{location_id_desc}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Swagger specifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{location_svc_host}}/swagger.json",
+							"protocol": "http",
+							"host": [
+								"{{location_svc_host}}"
+							],
+							"path": [
+								"swagger.json"
+							]
+						},
+						"description": "The API Swagger specifications as JSON"
+					},
+					"response": []
+				}
+			],
+			"description": "Location API helps attendees make connections by managing their geolocations"
+		},
+		{
+			"name": "Connection API v0.1.0",
+			"item": [
+				{
+					"name": "get_person_connections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{conn_svc_base_url}}/persons/:person_id/connections?distance=5&end_date=2020-12-30&start_date=2020-01-01",
+							"host": [
+								"{{conn_svc_base_url}}"
+							],
+							"path": [
+								"persons",
+								":person_id",
+								"connections"
+							],
+							"query": [
+								{
+									"key": "distance",
+									"value": "5",
+									"description": "Proximity to a given user in meters"
+								},
+								{
+									"key": "end_date",
+									"value": "2020-12-30",
+									"description": "Upper bound of date range"
+								},
+								{
+									"key": "start_date",
+									"value": "2020-01-01",
+									"description": "Lower bound of date range"
+								}
+							],
+							"variable": [
+								{
+									"key": "person_id",
+									"value": "1",
+									"description": "{{person_id_desc}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Swagger specifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{conn_svc_host}}/swagger.json",
+							"protocol": "http",
+							"host": [
+								"{{conn_svc_host}}"
+							],
+							"path": [
+								"swagger.json"
+							]
+						},
+						"description": "The API Swagger specifications as JSON"
+					},
+					"response": []
+				}
+			],
+			"description": "Connection API helps attendees make connections inform them if they have attended the same booths and presentations at an event."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "conn_svc_host",
+			"value": "localhost:30004",
+			"type": "string"
+		},
+		{
+			"key": "person_svc_host",
+			"value": "localhost:30003",
+			"type": "string"
+		},
+		{
+			"key": "location_svc_host",
+			"value": "localhost:30002",
+			"type": "string"
+		},
+		{
+			"key": "conn_svc_base_url",
+			"value": "http://{{conn_svc_host}}/api",
+			"type": "string"
+		},
+		{
+			"key": "person_svc_base_url",
+			"value": "http://{{person_svc_host}}/api",
+			"type": "string"
+		},
+		{
+			"key": "location_svc_base_url",
+			"value": "http://{{location_svc_host}}/api",
+			"type": "string"
+		},
+		{
+			"key": "location_id_desc",
+			"value": "Unique ID for a given Location"
+		},
+		{
+			"key": "person_id_desc",
+			"value": "Unique ID for a given Person"
+		}
+	]
+}

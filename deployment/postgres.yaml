@@ -1,3 +1,4 @@
+---
 kind: PersistentVolume
 apiVersion: v1
 metadata:
@@ -13,6 +14,7 @@ spec:
     - ReadWriteMany
   hostPath:
     path: "/mnt/data"
+
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -27,6 +29,7 @@ spec:
   resources:
     requests:
       storage: 256Mi
+
 ---
 apiVersion: v1
 kind: Service
@@ -39,7 +42,28 @@ spec:
   selector:
     app: postgres
   ports:
-   - port: 5432
+    - port: 5432
+
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  DB_USERNAME: "ct_admin"
+  DB_NAME: "geoconnections"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+metadata:
+  name: db-env
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  DB_PASSWORD: d293aW1zb3NlY3VyZQ==
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -55,28 +79,34 @@ spec:
       labels:
         app: postgres
     spec:
+      # TODO: seed the deployment automatically with db/*.sql scripts
       containers:
         - name: postgres
           image: postgis/postgis:12-2.5-alpine
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
+          # ! resources have been commented due to limited resources of the VM provisioned
+          # resources:
+          #   limits:
+          #     cpu: "500m"
+          #     memory: "512Mi"
           env:
-          - name: POSTGRES_USER
-            valueFrom:
-              configMapKeyRef:
-                name: db-env
-                key: DB_USERNAME
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: DB_PASSWORD
-          - name: POSTGRES_DB
-            valueFrom:
-              configMapKeyRef:
-                name: db-env
-                key: DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: db-env
+                  key: DB_NAME
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
