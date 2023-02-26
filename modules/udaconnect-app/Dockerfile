@@ -28,7 +28,7 @@ USER node
 
 WORKDIR /usr/src/app
 
-RUN npm install react-scripts@3.4.3 -g
+RUN npm install react-scripts@3.4.0 -g
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --chown=node:node . /usr/src/app
