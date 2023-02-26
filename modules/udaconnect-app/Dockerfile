@@ -1,39 +1,27 @@
-# Build Image
-# -----------
-FROM node:latest AS build
-
-RUN apt-get update && \ 
-    apt-get install -y --no-install-recommends dumb-init
-
-WORKDIR /usr/src/app
-
-COPY package*.json /usr/src/app/
-
-# RUN npm install react-scripts@3.4.3 -g
-
-RUN npm i
-
-# Production Image
-# ----------------
 # I am referencing the image digest to ensure deterministic build
 FROM node:14.8.0-alpine3.12@sha256:985f18d0168e1d1d2ab8492f7be3ffec9e22c3db3ce242e01c16c36e08ce35eb
+
+# an init process, in that it is invoked with PID 1, then spawns our Node.js application as another process whilst ensuring that all signals are proxied to that Node.js proce
+RUN apk add dumb-init
 
 # sometimes significant to production performance
 ENV NODE_ENV production
 
-COPY --from=build /usr/bin/dumb-init /usr/bin/dumb-init
-
 # Following least privilege principle, to ensure we don't provide root access to our container default user
-
+RUN mkdir /usr/src/app && chown node:node /usr/src/app
 WORKDIR /usr/src/app
 
-RUN npm install react-scripts@3.4.0 -g
+RUN npm install react-scripts@3.4.3 -g
 
-COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_modules
+# install dependencies and leverage docker caching layer
+COPY package*.json --chown=node:node /usr/src/app/
+RUN npm install
+
 COPY --chown=node:node . /usr/src/app
 
+# su node
 USER node
 
 EXPOSE 3000
 
-CMD [ "/usr/bin/dumb-init", "node", "src/index.js" ]
+CMD [ "dumb-init", "node", "src/index.js" ]
