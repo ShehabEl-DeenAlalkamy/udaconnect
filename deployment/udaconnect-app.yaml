@@ -44,9 +44,9 @@ spec:
               memory: "256Mi"
               cpu: "256m"
           env:
-            - name: CONN_SVC_HOST
+            - name: REACT_APP_CONN_SVC_HOST
               value: "localhost:30004"
 
-            - name: PERSON_SVC_HOST
+            - name: REACT_APP_PERSON_SVC_HOST
               value: "localhost:30003"
       restartPolicy: Always
