@@ -11,7 +11,7 @@ COPY package*.json /usr/src/app/
 
 # RUN npm install react-scripts@3.4.3 -g
 
-RUN npm ci --omit=dev
+RUN npm i
 
 # Production Image
 # ----------------
