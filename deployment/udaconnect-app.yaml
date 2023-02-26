@@ -32,6 +32,23 @@ spec:
       labels:
         service: udaconnect-app
     spec:
+      initContainers:
+        - name: init-udaconnect-connections-service
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup udaconnect-connections-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for udaconnect-connections-service; sleep 2; done; echo "[OK] udaconnect-connections-service is ready"',
+            ]
+        - name: init-udaconnect-persons-service
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup udaconnect-persons-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for udaconnect-persons-service; sleep 2; done; echo "[OK] udaconnect-persons-service is ready"',
+            ]
       containers:
         - image: shehabeldeen/udaconnect-app:latest
           name: udaconnect-app
