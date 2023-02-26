@@ -43,4 +43,10 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "256m"
+          env:
+            - name: CONN_SVC_HOST
+              value: "localhost:30004"
+
+            - name: PERSON_SVC_HOST
+              value: "localhost:30003"
       restartPolicy: Always
