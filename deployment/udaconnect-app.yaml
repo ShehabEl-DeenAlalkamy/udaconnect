@@ -32,8 +32,25 @@ spec:
       labels:
         service: udaconnect-app
     spec:
+      initContainers:
+        - name: init-udaconnect-connections-service
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup udaconnect-connections-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for udaconnect-connections-service; sleep 2; done; echo "[OK] udaconnect-connections-service is ready"',
+            ]
+        - name: init-udaconnect-persons-service
+          image: busybox:1.28
+          command:
+            [
+              "sh",
+              "-c",
+              'until nslookup udaconnect-persons-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for udaconnect-persons-service; sleep 2; done; echo "[OK] udaconnect-persons-service is ready"',
+            ]
       containers:
-        - image: udacity/nd064-udaconnect-app:latest
+        - image: shehabeldeen/udaconnect-app:latest
           name: udaconnect-app
           imagePullPolicy: Always
           resources:
@@ -43,4 +60,10 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "256m"
+          env:
+            - name: REACT_APP_CONN_SVC_BASE_URL
+              value: "http://localhost:30004/api"
+
+            - name: REACT_APP_PERSON_SVC_BASE_URL
+              value: "http://localhost:30003/api"
       restartPolicy: Always
