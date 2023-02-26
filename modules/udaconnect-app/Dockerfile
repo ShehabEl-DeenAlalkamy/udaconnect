@@ -36,4 +36,4 @@ USER node
 
 EXPOSE 3000
 
-CMD [ "dumb-init", "node", "src/index.js" ]
+CMD [ "/usr/bin/dumb-init", "node", "src/index.js" ]
