@@ -8,7 +8,7 @@ RUN apk add dumb-init
 ENV NODE_ENV production
 
 # Following least privilege principle, to ensure we don't provide root access to our container default user
-RUN mkdir /usr/src/app && chown node:node /usr/src/app
+RUN mkdir -p /usr/src/app && chown node:node /usr/src/app
 WORKDIR /usr/src/app
 
 RUN npm install react-scripts@3.4.3 -g
